@@ -296,6 +296,82 @@ function showToast(message) {
     setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
+// Tab Modal
+function openTabModal(tab = null) {
+    document.getElementById('tab-modal-title').textContent = tab ? '编辑 Tab' : '新建 Tab';
+    document.getElementById('tab-id').value = tab?.id || '';
+    document.getElementById('tab-name').value = tab?.name || '';
+    document.getElementById('tab-type').value = tab?.type || 'command';
+    document.getElementById('tab-modal').classList.add('show');
+    document.getElementById('tab-name').focus();
+}
+
+function closeTabModal() {
+    document.getElementById('tab-modal').classList.remove('show');
+}
+
+function editTab(tabId) {
+    const tab = tabs.find(t => t.id === tabId);
+    openTabModal(tab);
+}
+
+document.getElementById('tab-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('tab-id').value;
+    const name = document.getElementById('tab-name').value.trim();
+    const type = document.getElementById('tab-type').value;
+
+    if (!name) return;
+
+    if (id) {
+        updateTab(parseInt(id), name, type);
+    } else {
+        createTab(name, type);
+    }
+
+    closeTabModal();
+    await loadTabs();
+});
+
+// Item Modal
+function openItemModal(item = null) {
+    document.getElementById('item-modal-title').textContent = item ? '编辑项目' : '添加项目';
+    document.getElementById('item-id').value = item?.id || '';
+    document.getElementById('item-title').value = item?.title || '';
+    document.getElementById('item-content').value = item?.content || '';
+    document.getElementById('item-description').value = item?.description || '';
+    document.getElementById('item-modal').classList.add('show');
+    document.getElementById('item-title').focus();
+}
+
+function closeItemModal() {
+    document.getElementById('item-modal').classList.remove('show');
+}
+
+function editItem(itemId) {
+    const item = items.find(i => i.id === itemId);
+    openItemModal(item);
+}
+
+document.getElementById('item-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('item-id').value;
+    const title = document.getElementById('item-title').value.trim();
+    const content = document.getElementById('item-content').value.trim();
+    const description = document.getElementById('item-description').value.trim();
+
+    if (!title || !content) return;
+
+    if (id) {
+        updateItem(parseInt(id), title, content, description);
+    } else {
+        createItem(currentTabId, title, content, description);
+    }
+
+    closeItemModal();
+    await loadItems();
+});
+
 // Initialize sql.js and database
 async function initDatabase() {
     const SQL = await initSqlJs({
