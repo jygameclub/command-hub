@@ -705,9 +705,17 @@ async function initDatabase() {
 // Migrate database to support new tab types
 function migrateDatabase() {
     try {
-        // Check if migration is needed by trying to insert a test value
-        // SQLite CHECK constraints are enforced on INSERT/UPDATE, not on table existence
-        // We need to recreate the table to update the CHECK constraint
+        // Check current table schema
+        const schemaResult = db.exec("SELECT sql FROM sqlite_master WHERE type='table' AND name='tabs'");
+        const currentSchema = schemaResult.length > 0 ? schemaResult[0].values[0][0] : '';
+
+        // Skip migration if already supports 'url' type
+        if (currentSchema.includes("'url'")) {
+            console.log('Database already migrated, skipping...');
+            return;
+        }
+
+        console.log('Migrating database to support url type...');
 
         // Get existing tabs data
         const tabsResult = db.exec('SELECT id, name, type, sort_order FROM tabs');
@@ -716,6 +724,8 @@ function migrateDatabase() {
         // Get existing items data
         const itemsResult = db.exec('SELECT id, tab_id, title, content, description, copy_count, sort_order FROM items');
         const itemsData = itemsResult.length > 0 ? itemsResult[0].values : [];
+
+        console.log(`Migrating ${tabsData.length} tabs and ${itemsData.length} items...`);
 
         // Drop old tables
         db.run('DROP TABLE IF EXISTS items');
@@ -735,6 +745,7 @@ function migrateDatabase() {
         }
 
         saveToIndexedDB();
+        console.log('Database migration completed successfully');
     } catch (e) {
         console.error('Migration error:', e);
     }
