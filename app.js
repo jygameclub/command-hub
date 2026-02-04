@@ -4,6 +4,9 @@ let tabs = [];
 let currentTabId = null;
 let items = [];
 let currentSort = localStorage.getItem('commandhub_sort') || 'order_asc';
+let currentTheme = localStorage.getItem('commandhub_theme') || 'dark-blue';
+let commandColor = localStorage.getItem('commandhub_command_color') || '#d1fae5';
+let descriptionColor = localStorage.getItem('commandhub_description_color') || '#6b7280';
 
 const DB_NAME = 'command-hub-db';
 
@@ -22,6 +25,81 @@ function saveFontSize(size) {
 function saveSort(sort) {
     localStorage.setItem('commandhub_sort', sort);
     currentSort = sort;
+}
+
+// Theme functions
+function initTheme() {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    document.documentElement.style.setProperty('--command-color', commandColor);
+    document.documentElement.style.setProperty('--description-color', descriptionColor);
+    updateThemeUI();
+    updateColorInputs();
+}
+
+function setTheme(theme) {
+    currentTheme = theme;
+    localStorage.setItem('commandhub_theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
+    updateThemeUI();
+}
+
+function updateThemeUI() {
+    document.querySelectorAll('.theme-option').forEach(opt => {
+        opt.classList.toggle('active', opt.dataset.theme === currentTheme);
+    });
+}
+
+function setCommandColor(color) {
+    commandColor = color;
+    localStorage.setItem('commandhub_command_color', color);
+    document.documentElement.style.setProperty('--command-color', color);
+    updateColorPreview();
+}
+
+function setDescriptionColor(color) {
+    descriptionColor = color;
+    localStorage.setItem('commandhub_description_color', color);
+    document.documentElement.style.setProperty('--description-color', color);
+    updateColorPreview();
+}
+
+function updateColorInputs() {
+    document.getElementById('command-color-picker').value = commandColor;
+    document.getElementById('command-color-input').value = commandColor;
+    document.getElementById('description-color-picker').value = descriptionColor;
+    document.getElementById('description-color-input').value = descriptionColor;
+    updateColorPreview();
+}
+
+function updateColorPreview() {
+    const previewCmd = document.querySelector('.preview-command');
+    const previewDesc = document.querySelector('.preview-description');
+    if (previewCmd) previewCmd.style.color = commandColor;
+    if (previewDesc) previewDesc.style.color = descriptionColor;
+}
+
+function resetCommandColor() {
+    const defaultColor = '#d1fae5';
+    setCommandColor(defaultColor);
+    document.getElementById('command-color-picker').value = defaultColor;
+    document.getElementById('command-color-input').value = defaultColor;
+}
+
+function resetDescriptionColor() {
+    const defaultColor = '#6b7280';
+    setDescriptionColor(defaultColor);
+    document.getElementById('description-color-picker').value = defaultColor;
+    document.getElementById('description-color-input').value = defaultColor;
+}
+
+// Settings Modal
+function openSettingsModal() {
+    updateColorInputs();
+    document.getElementById('settings-modal').classList.add('show');
+}
+
+function closeSettingsModal() {
+    document.getElementById('settings-modal').classList.remove('show');
 }
 
 // IndexedDB helpers
@@ -587,6 +665,7 @@ function createTables() {
 // Start the app
 initDatabase();
 initFontSize();
+initTheme();
 
 // Restore saved sort option
 document.getElementById('sort-select').value = currentSort;
@@ -672,4 +751,40 @@ document.getElementById('confirm-paste-import').addEventListener('click', async 
     }
     const success = await importTabFromJson(jsonText);
     if (success) closeJsonImportModal();
+});
+
+// Settings event listeners
+document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
+
+// Theme selection
+document.querySelectorAll('.theme-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+        setTheme(opt.dataset.theme);
+    });
+});
+
+// Command color
+document.getElementById('command-color-picker').addEventListener('input', (e) => {
+    setCommandColor(e.target.value);
+    document.getElementById('command-color-input').value = e.target.value;
+});
+document.getElementById('command-color-input').addEventListener('change', (e) => {
+    const color = e.target.value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+        setCommandColor(color);
+        document.getElementById('command-color-picker').value = color;
+    }
+});
+
+// Description color
+document.getElementById('description-color-picker').addEventListener('input', (e) => {
+    setDescriptionColor(e.target.value);
+    document.getElementById('description-color-input').value = e.target.value;
+});
+document.getElementById('description-color-input').addEventListener('change', (e) => {
+    const color = e.target.value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+        setDescriptionColor(color);
+        document.getElementById('description-color-picker').value = color;
+    }
 });

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Command Hub</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,6 +17,7 @@
                     <input type="range" id="font-size-slider" min="12" max="24" value="16">
                     <span>A+</span>
                 </div>
+                <button id="settings-btn" class="btn btn-icon-square" title="主题设置">⚙️</button>
                 <button id="import-btn" class="btn">导入</button>
                 <button id="export-btn" class="btn">导出</button>
                 <button id="add-tab-btn" class="btn btn-primary">+ 新建 Tab</button>
@@ -134,6 +136,64 @@
                     <button type="button" class="btn" onclick="closeJsonImportModal()">取消</button>
                     <button type="button" class="btn btn-primary" id="confirm-paste-import">确认导入</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2>主题设置</h2>
+            <div class="form-group">
+                <label>选择主题</label>
+                <div class="theme-grid">
+                    <div class="theme-option" data-theme="dark-blue">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #0f1220, #161a2f);"></div>
+                        <span class="theme-name">深蓝</span>
+                    </div>
+                    <div class="theme-option" data-theme="dark-green">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #0f1a14, #142620);"></div>
+                        <span class="theme-name">深绿</span>
+                    </div>
+                    <div class="theme-option" data-theme="dark-purple">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #1a0f20, #261430);"></div>
+                        <span class="theme-name">深紫</span>
+                    </div>
+                    <div class="theme-option" data-theme="dark-orange">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #1a1308, #2a1f0f);"></div>
+                        <span class="theme-name">深橙</span>
+                    </div>
+                    <div class="theme-option" data-theme="light">
+                        <div class="theme-preview" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0);"></div>
+                        <span class="theme-name">浅色</span>
+                    </div>
+                </div>
+            </div>
+            <div class="color-settings">
+                <h3>自定义颜色</h3>
+                <div class="color-row">
+                    <label>命令文字颜色</label>
+                    <div class="color-input-group">
+                        <input type="color" id="command-color-picker" value="#d1fae5">
+                        <input type="text" id="command-color-input" value="#d1fae5" maxlength="7">
+                        <button type="button" class="btn btn-reset" onclick="resetCommandColor()">重置</button>
+                    </div>
+                </div>
+                <div class="color-row">
+                    <label>描述文字颜色</label>
+                    <div class="color-input-group">
+                        <input type="color" id="description-color-picker" value="#6b7280">
+                        <input type="text" id="description-color-input" value="#6b7280" maxlength="7">
+                        <button type="button" class="btn btn-reset" onclick="resetDescriptionColor()">重置</button>
+                    </div>
+                </div>
+                <div class="color-preview">
+                    <div class="preview-command">命令预览: git status</div>
+                    <div class="preview-description">描述预览: 查看当前状态</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeSettingsModal()">关闭</button>
             </div>
         </div>
     </div>
