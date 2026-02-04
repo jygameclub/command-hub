@@ -332,30 +332,41 @@ function renderItems() {
         return;
     }
 
-    list.innerHTML = items.map(item => `
-        <div class="item-card" data-id="${item.id}">
-            <div class="item-header">
-                <span class="item-title">${escapeHtml(item.title)}</span>
-                <div class="item-actions">
-                    ${isCommand ? `<button class="btn btn-primary btn-small" onclick="handleCopyItem(${item.id})">复制</button>` : ''}
-                    <button class="btn-icon" onclick="handleMoveItem(${item.id}, 'up')" title="上移">↑</button>
-                    <button class="btn-icon" onclick="handleMoveItem(${item.id}, 'down')" title="下移">↓</button>
-                    <button class="btn-icon" onclick="editItem(${item.id})" title="编辑">✏️</button>
-                    <button class="btn-icon" onclick="handleDeleteItem(${item.id})" title="删除">🗑️</button>
+    list.innerHTML = items.map(item => {
+        // Split content by newlines to support multiple commands
+        const commands = item.content.split('\n').filter(cmd => cmd.trim());
+
+        const commandsHtml = isCommand
+            ? commands.map((cmd, idx) => `
+                <div class="command-line">
+                    <code>${escapeHtml(cmd)}</code>
+                    <button class="btn btn-primary btn-small" onclick="handleCopyCommand(${item.id}, ${idx}, '${escapeHtml(cmd).replace(/'/g, "\\'")}')">复制</button>
+                </div>
+            `).join('')
+            : `<div class="item-content">${escapeHtml(item.content)}</div>`;
+
+        return `
+            <div class="item-card" data-id="${item.id}">
+                <div class="item-header">
+                    <span class="item-title">${escapeHtml(item.description || item.title)}</span>
+                    <div class="item-actions">
+                        <button class="btn-icon" onclick="handleMoveItem(${item.id}, 'up')" title="上移">↑</button>
+                        <button class="btn-icon" onclick="handleMoveItem(${item.id}, 'down')" title="下移">↓</button>
+                        <button class="btn-icon" onclick="editItem(${item.id})" title="编辑">✏️</button>
+                        <button class="btn-icon" onclick="handleDeleteItem(${item.id})" title="删除">🗑️</button>
+                    </div>
+                </div>
+                ${isCommand ? `<div class="commands-list">${commandsHtml}</div>` : commandsHtml}
+                <div class="item-footer">
+                    ${isCommand ? `<span class="copy-count">已复制 ${item.copy_count} 次</span>` : ''}
                 </div>
             </div>
-            <div class="item-content">${escapeHtml(item.content)}</div>
-            <div class="item-footer">
-                <span class="item-description">${escapeHtml(item.description || '')}</span>
-                ${isCommand ? `<span class="copy-count">已复制 ${item.copy_count} 次</span>` : ''}
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
-async function handleCopyItem(itemId) {
-    const item = items.find(i => i.id === itemId);
-    await navigator.clipboard.writeText(item.content);
+async function handleCopyCommand(itemId, cmdIndex, cmdText) {
+    await navigator.clipboard.writeText(cmdText);
     incrementCopyCount(itemId);
     showToast('已复制到剪贴板');
     await loadItems();
