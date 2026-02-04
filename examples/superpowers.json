@@ -1,0 +1,6 @@
+[
+  {"title":"Brainstorming","content":"/superpowers:brainstorming","description":"1️⃣ 思考 - 探索需求和设计方案"},
+  {"title":"Writing Plans","content":"/superpowers:writing-plans","description":"2️⃣ 写文档 - 创建详细实现计划"},
+  {"title":"Executing Plans","content":"/superpowers:executing-plans","description":"3️⃣ 执行文档 - 按计划逐步实现"},
+  {"title":"Systematic Debugging","content":"/superpowers:systematic-debugging","description":"4️⃣ 修Bug - 系统化调试定位问题"}
+]

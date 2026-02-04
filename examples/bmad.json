@@ -1,6 +1,7 @@
 [
-  {"title":"Quick Spec","content":"/bmad-bmm-quick-spec","description":"1️⃣ 你开始说话 - 快速描述需求"},
-  {"title":"Create Story","content":"/bmad-bmm-create-story","description":"2️⃣ 机器帮你拆 - 自动拆分用户故事"},
-  {"title":"Advanced Elicitation","content":"/bmad-bmm-advanced-elicitation","description":"3️⃣ 深挖风险（可选）- 风险分析"},
-  {"title":"Dev Story","content":"/dev-story","description":"4️⃣ 写代码 - 开始开发实现"}
+  {"title":"Quick Spec","content":"/bmad-bmm-quick-spec","description":"1️⃣ 值不值得做？范围多大？R - 对抗性审核（推荐）"},
+  {"title":"Create Architecture","content":"/bmad-bmm-create-architecture","description":"2️⃣ 系统怎么站得住？"},
+  {"title":"Create Story","content":"/bmad-bmm-create-story","description":"3️⃣ 怎么拆成可交付？"},
+  {"title":"Advanced Elicitation","content":"/bmad-bmm-advanced-elicitation","description":"4️⃣ 有没有坑？有没有监管/审计风险？"},
+  {"title":"Dev Story","content":"/dev-story","description":"5️⃣ 只做实现，不再争论方向"}
 ]

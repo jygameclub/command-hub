@@ -1,0 +1,5 @@
+[
+  {"title":"启动 Java","content":"mvn spring-boot:run","description":"Maven 启动 Spring Boot 项目"},
+  {"title":"启动 Claude","content":"claude --dangerously-skip-permissions","description":"跳过权限确认启动 Claude Code"},
+  {"title":"查看 Claude 用量","content":"https://console.anthropic.com/settings/usage","description":"打开 Anthropic 控制台查看用量"}
+]

@@ -18,5 +18,8 @@
   {"title":"回退一次提交","content":"git reset --hard HEAD~1","description":"TOP 17｜回退一次提交（危险）"},
   {"title":"安全回滚提交","content":"git revert HEAD","description":"TOP 18｜安全回滚提交"},
   {"title":"删除本地分支","content":"git branch -d dev","description":"TOP 19｜删除本地分支"},
-  {"title":"删除远端分支","content":"git push origin --delete dev","description":"TOP 20｜删除远端分支"}
+  {"title":"删除远端分支","content":"git push origin --delete dev","description":"TOP 20｜删除远端分支"},
+  {"title":"强制同步远程","content":"git reset --hard origin/dev","description":"TOP 21｜让已跟踪文件 = 远程分支（危险）"},
+  {"title":"删除未跟踪文件","content":"git clean -fd","description":"TOP 22｜删除所有未跟踪文件/文件夹（危险）"},
+  {"title":"清理合集","content":"git fetch origin\ngit reset --hard origin/dev\ngit clean -fd","description":"TOP 23｜强制同步远程并清理（危险）"}
 ]

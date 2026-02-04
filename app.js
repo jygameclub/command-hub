@@ -308,17 +308,27 @@ async function loadItems() {
     renderItems();
 }
 
-function createItem(tabId, title, content, description) {
-    const maxOrder = db.exec('SELECT COALESCE(MAX(sort_order), 0) FROM items WHERE tab_id = ?', [tabId]);
-    const order = (maxOrder[0]?.values[0][0] || 0) + 1;
+function createItem(tabId, title, content, description, customOrder = null) {
+    let order;
+    if (customOrder !== null) {
+        order = customOrder;
+    } else {
+        const maxOrder = db.exec('SELECT COALESCE(MAX(sort_order), 0) FROM items WHERE tab_id = ?', [tabId]);
+        order = (maxOrder[0]?.values[0][0] || 0) + 1;
+    }
     db.run('INSERT INTO items (tab_id, title, content, description, sort_order) VALUES (?, ?, ?, ?, ?)',
         [tabId, title, content, description, order]);
     saveToIndexedDB();
 }
 
-function updateItem(id, title, content, description) {
-    db.run('UPDATE items SET title = ?, content = ?, description = ? WHERE id = ?',
-        [title, content, description, id]);
+function updateItem(id, title, content, description, order = null) {
+    if (order !== null) {
+        db.run('UPDATE items SET title = ?, content = ?, description = ?, sort_order = ? WHERE id = ?',
+            [title, content, description, order, id]);
+    } else {
+        db.run('UPDATE items SET title = ?, content = ?, description = ? WHERE id = ?',
+            [title, content, description, id]);
+    }
     saveToIndexedDB();
 }
 
@@ -493,6 +503,7 @@ function openItemModal(item = null) {
     document.getElementById('item-title').value = item?.title || '';
     document.getElementById('item-content').value = item?.content || '';
     document.getElementById('item-description').value = item?.description || '';
+    document.getElementById('item-order').value = item?.sort_order || '';
     document.getElementById('item-modal').classList.add('show');
     document.getElementById('item-title').focus();
 }
@@ -512,13 +523,15 @@ document.getElementById('item-form').addEventListener('submit', async (e) => {
     const title = document.getElementById('item-title').value.trim();
     const content = document.getElementById('item-content').value.trim();
     const description = document.getElementById('item-description').value.trim();
+    const orderValue = document.getElementById('item-order').value;
+    const order = orderValue ? parseInt(orderValue) : null;
 
     if (!title || !content) return;
 
     if (id) {
-        updateItem(parseInt(id), title, content, description);
+        updateItem(parseInt(id), title, content, description, order);
     } else {
-        createItem(currentTabId, title, content, description);
+        createItem(currentTabId, title, content, description, order);
     }
 
     closeItemModal();
