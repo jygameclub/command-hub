@@ -88,6 +88,33 @@
         </div>
     </div>
 
+    <!-- JSON Import Modal -->
+    <div id="json-import-modal" class="modal">
+        <div class="modal-content">
+            <h2>导入 JSON</h2>
+            <div class="import-options">
+                <button id="import-json-file-btn" class="btn import-option-btn">
+                    <span class="import-icon">📁</span>
+                    <span>从文件导入</span>
+                </button>
+                <button id="import-json-paste-btn" class="btn import-option-btn">
+                    <span class="import-icon">📋</span>
+                    <span>粘贴 JSON</span>
+                </button>
+            </div>
+            <div id="json-paste-area" style="display:none;">
+                <div class="form-group">
+                    <label for="json-paste-input">粘贴 JSON 内容</label>
+                    <textarea id="json-paste-input" rows="10" placeholder='{"tab":{"name":"...","type":"command"},"items":[...]}'></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeJsonImportModal()">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirm-paste-import">确认导入</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Hidden file input for import -->
     <input type="file" id="import-file" accept=".db" style="display:none">
     <input type="file" id="import-json-file" accept=".json" style="display:none">

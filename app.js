@@ -114,15 +114,16 @@ function exportTabAsJson() {
     showToast('JSON 已导出');
 }
 
-// Import JSON to current tab
-async function importTabFromJson(file) {
+// Import JSON to current tab (accepts File object or JSON string)
+async function importTabFromJson(input) {
     if (!currentTabId) {
         showToast('请先选择一个 Tab');
         return;
     }
 
     try {
-        const text = await file.text();
+        // Handle both File object and string input
+        const text = typeof input === 'string' ? input : await input.text();
         const data = JSON.parse(text);
 
         if (!data.items || !Array.isArray(data.items)) {
@@ -154,10 +155,31 @@ async function importTabFromJson(file) {
         await saveToIndexedDB();
         await loadItems();
         showToast(`已导入 ${data.items.length} 个项目`);
+        return true;
     } catch (e) {
-        showToast('导入失败：无效的 JSON 文件');
+        showToast('导入失败：无效的 JSON 格式');
         console.error(e);
+        return false;
     }
+}
+
+// JSON Import Modal functions
+function openJsonImportModal() {
+    if (!currentTabId) {
+        showToast('请先选择一个 Tab');
+        return;
+    }
+    document.getElementById('json-paste-area').style.display = 'none';
+    document.getElementById('json-paste-input').value = '';
+    document.getElementById('json-import-modal').classList.add('show');
+}
+
+function closeJsonImportModal() {
+    document.getElementById('json-import-modal').classList.remove('show');
+}
+
+function showJsonPasteArea() {
+    document.getElementById('json-paste-area').style.display = 'block';
 }
 
 // Tab operations
@@ -545,16 +567,26 @@ document.addEventListener('keydown', (e) => {
 
 // JSON Import/Export event listeners
 document.getElementById('export-json-btn').addEventListener('click', exportTabAsJson);
-document.getElementById('import-json-btn').addEventListener('click', () => {
-    if (!currentTabId) {
-        showToast('请先选择一个 Tab');
-        return;
-    }
+document.getElementById('import-json-btn').addEventListener('click', openJsonImportModal);
+
+// JSON Import Modal event listeners
+document.getElementById('import-json-file-btn').addEventListener('click', () => {
     document.getElementById('import-json-file').click();
 });
-document.getElementById('import-json-file').addEventListener('change', (e) => {
+document.getElementById('import-json-paste-btn').addEventListener('click', showJsonPasteArea);
+document.getElementById('import-json-file').addEventListener('change', async (e) => {
     if (e.target.files.length > 0) {
-        importTabFromJson(e.target.files[0]);
+        const success = await importTabFromJson(e.target.files[0]);
+        if (success) closeJsonImportModal();
         e.target.value = '';
     }
+});
+document.getElementById('confirm-paste-import').addEventListener('click', async () => {
+    const jsonText = document.getElementById('json-paste-input').value.trim();
+    if (!jsonText) {
+        showToast('请粘贴 JSON 内容');
+        return;
+    }
+    const success = await importTabFromJson(jsonText);
+    if (success) closeJsonImportModal();
 });
