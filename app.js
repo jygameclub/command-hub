@@ -82,6 +82,90 @@ async function importDatabase(file) {
     }
 }
 
+// Tab operations
+async function loadTabs() {
+    const result = db.exec('SELECT * FROM tabs ORDER BY sort_order');
+    tabs = result.length > 0 ? result[0].values.map(row => ({
+        id: row[0],
+        name: row[1],
+        type: row[2],
+        sort_order: row[3]
+    })) : [];
+
+    renderTabs();
+
+    if (tabs.length > 0 && !currentTabId) {
+        selectTab(tabs[0].id);
+    } else if (currentTabId) {
+        await loadItems();
+    }
+}
+
+function createTab(name, type) {
+    const maxOrder = db.exec('SELECT COALESCE(MAX(sort_order), 0) FROM tabs');
+    const order = (maxOrder[0]?.values[0][0] || 0) + 1;
+    db.run('INSERT INTO tabs (name, type, sort_order) VALUES (?, ?, ?)', [name, type, order]);
+    saveToIndexedDB();
+}
+
+function updateTab(id, name, type) {
+    db.run('UPDATE tabs SET name = ?, type = ? WHERE id = ?', [name, type, id]);
+    saveToIndexedDB();
+}
+
+function deleteTab(id) {
+    db.run('DELETE FROM items WHERE tab_id = ?', [id]);
+    db.run('DELETE FROM tabs WHERE id = ?', [id]);
+    saveToIndexedDB();
+}
+
+function moveTab(id, direction) {
+    const current = tabs.find(t => t.id === id);
+    if (!current) return;
+
+    const idx = tabs.indexOf(current);
+    const neighborIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (neighborIdx < 0 || neighborIdx >= tabs.length) return;
+
+    const neighbor = tabs[neighborIdx];
+    db.run('UPDATE tabs SET sort_order = ? WHERE id = ?', [neighbor.sort_order, id]);
+    db.run('UPDATE tabs SET sort_order = ? WHERE id = ?', [current.sort_order, neighbor.id]);
+    saveToIndexedDB();
+}
+
+function renderTabs() {
+    const nav = document.getElementById('tabs-nav');
+    nav.innerHTML = tabs.map(tab => `
+        <div class="tab ${tab.id === currentTabId ? 'active' : ''}" data-id="${tab.id}">
+            <span class="tab-name" onclick="selectTab(${tab.id})">${escapeHtml(tab.name)}</span>
+            <div class="tab-actions">
+                <button class="btn-icon" onclick="event.stopPropagation(); handleMoveTab(${tab.id}, 'up')" title="上移">↑</button>
+                <button class="btn-icon" onclick="event.stopPropagation(); handleMoveTab(${tab.id}, 'down')" title="下移">↓</button>
+                <button class="btn-icon" onclick="event.stopPropagation(); editTab(${tab.id})" title="编辑">✏️</button>
+                <button class="btn-icon" onclick="event.stopPropagation(); handleDeleteTab(${tab.id})" title="删除">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function selectTab(tabId) {
+    currentTabId = tabId;
+    renderTabs();
+    await loadItems();
+}
+
+async function handleMoveTab(tabId, direction) {
+    moveTab(tabId, direction);
+    await loadTabs();
+}
+
+async function handleDeleteTab(tabId) {
+    if (!confirm('确定删除此 Tab 及其所有内容？')) return;
+    deleteTab(tabId);
+    if (currentTabId === tabId) currentTabId = null;
+    await loadTabs();
+}
+
 // Initialize sql.js and database
 async function initDatabase() {
     const SQL = await initSqlJs({
