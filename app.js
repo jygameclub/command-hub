@@ -49,6 +49,39 @@ async function loadFromIndexedDB() {
     }
 }
 
+// Export database
+function exportDatabase() {
+    const data = db.export();
+    const blob = new Blob([data], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `command-hub-${new Date().toISOString().slice(0, 10)}.db`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('数据库已导出');
+}
+
+// Import database
+async function importDatabase(file) {
+    const buffer = await file.arrayBuffer();
+    const data = new Uint8Array(buffer);
+
+    const SQL = await initSqlJs({
+        locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}`
+    });
+
+    try {
+        db = new SQL.Database(data);
+        await saveToIndexedDB();
+        await loadTabs();
+        showToast('数据库已导入');
+    } catch (e) {
+        showToast('导入失败：无效的数据库文件');
+        console.error(e);
+    }
+}
+
 // Initialize sql.js and database
 async function initDatabase() {
     const SQL = await initSqlJs({
@@ -97,3 +130,15 @@ function createTables() {
 
 // Start the app
 initDatabase();
+
+// Import/Export event listeners
+document.getElementById('export-btn').addEventListener('click', exportDatabase);
+document.getElementById('import-btn').addEventListener('click', () => {
+    document.getElementById('import-file').click();
+});
+document.getElementById('import-file').addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        importDatabase(e.target.files[0]);
+        e.target.value = '';
+    }
+});
