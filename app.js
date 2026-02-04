@@ -236,14 +236,8 @@ function moveTab(id, direction) {
 function renderTabs() {
     const nav = document.getElementById('tabs-nav');
     nav.innerHTML = tabs.map(tab => `
-        <div class="tab ${tab.id === currentTabId ? 'active' : ''}" data-id="${tab.id}">
-            <span class="tab-name" onclick="selectTab(${tab.id})">${escapeHtml(tab.name)}</span>
-            <div class="tab-actions">
-                <button class="btn-icon" onclick="event.stopPropagation(); handleMoveTab(${tab.id}, 'up')" title="上移">↑</button>
-                <button class="btn-icon" onclick="event.stopPropagation(); handleMoveTab(${tab.id}, 'down')" title="下移">↓</button>
-                <button class="btn-icon" onclick="event.stopPropagation(); editTab(${tab.id})" title="编辑">✏️</button>
-                <button class="btn-icon" onclick="event.stopPropagation(); handleDeleteTab(${tab.id})" title="删除">🗑️</button>
-            </div>
+        <div class="tab ${tab.id === currentTabId ? 'active' : ''}" data-id="${tab.id}" onclick="selectTab(${tab.id})">
+            <span class="tab-name">${escapeHtml(tab.name)}</span>
         </div>
     `).join('');
 }
@@ -257,13 +251,9 @@ async function selectTab(tabId) {
 async function handleMoveTab(tabId, direction) {
     moveTab(tabId, direction);
     await loadTabs();
-}
-
-async function handleDeleteTab(tabId) {
-    if (!confirm('确定删除此 Tab 及其所有内容？')) return;
-    deleteTab(tabId);
-    if (currentTabId === tabId) currentTabId = null;
-    await loadTabs();
+    // Re-open modal with updated tab info
+    const tab = tabs.find(t => t.id === tabId);
+    if (tab) openTabModal(tab);
 }
 
 // Item operations
@@ -402,8 +392,20 @@ function openTabModal(tab = null) {
     document.getElementById('tab-id').value = tab?.id || '';
     document.getElementById('tab-name').value = tab?.name || '';
     document.getElementById('tab-type').value = tab?.type || 'command';
+    // Show/hide edit actions (move/delete) only when editing
+    document.getElementById('tab-edit-actions').style.display = tab ? 'block' : 'none';
     document.getElementById('tab-modal').classList.add('show');
     document.getElementById('tab-name').focus();
+}
+
+function handleDeleteCurrentTab() {
+    const tabId = parseInt(document.getElementById('tab-id').value);
+    if (!tabId) return;
+    if (!confirm('确定删除此 Tab 及其所有内容？')) return;
+    deleteTab(tabId);
+    if (currentTabId === tabId) currentTabId = null;
+    closeTabModal();
+    loadTabs();
 }
 
 function closeTabModal() {
@@ -535,6 +537,14 @@ document.getElementById('import-file').addEventListener('change', (e) => {
 
 // Event listeners
 document.getElementById('add-tab-btn').addEventListener('click', () => openTabModal());
+document.getElementById('edit-tab-btn').addEventListener('click', () => {
+    if (!currentTabId) {
+        showToast('请先选择一个 Tab');
+        return;
+    }
+    const tab = tabs.find(t => t.id === currentTabId);
+    if (tab) openTabModal(tab);
+});
 
 document.getElementById('add-item-btn').addEventListener('click', () => {
     if (!currentTabId) {

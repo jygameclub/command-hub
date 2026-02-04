@@ -332,6 +332,40 @@ header h1 {
     opacity: 1;
 }
 
+/* Tab Edit Actions */
+.tab-edit-actions {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.tab-edit-actions label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.tab-move-btns {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.tab-move-btns .btn {
+    flex: 1;
+}
+
+.btn-danger {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
 /* Import Options */
 .import-options {
     display: flex;
