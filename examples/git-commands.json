@@ -1,1 +1,24 @@
-{"tab":{"name":"Git","type":"command"},"items":[{"title":"git status","content":"git status","description":"TOP 1｜查看状态","copy_count":0},{"title":"git pull","content":"git pull origin dev","description":"TOP 2｜拉取代码","copy_count":0},{"title":"git pull --rebase","content":"git pull --rebase origin dev","description":"TOP 2｜拉取代码（变基方式）","copy_count":0},{"title":"git branch","content":"git branch","description":"TOP 3｜查看本地分支","copy_count":0},{"title":"git branch -a","content":"git branch -a","description":"TOP 3｜查看所有分支","copy_count":0},{"title":"git switch","content":"git switch dev","description":"TOP 4｜切换分支","copy_count":0},{"title":"git switch -c","content":"git switch -c feature/xxx","description":"TOP 5｜创建并切换分支","copy_count":0},{"title":"git log","content":"git log --oneline --graph --decorate","description":"TOP 6｜查看提交历史","copy_count":0},{"title":"git add .","content":"git add .","description":"TOP 7｜暂存所有改动","copy_count":0},{"title":"git commit","content":"git commit -m \"feat: your message\"","description":"TOP 8｜提交代码","copy_count":0},{"title":"git push","content":"git push origin dev","description":"TOP 9｜推送到远端","copy_count":0},{"title":"git fetch","content":"git fetch origin","description":"TOP 10｜仅拉取不合并","copy_count":0},{"title":"git diff","content":"git diff","description":"TOP 11｜查看差异","copy_count":0},{"title":"git diff --cached","content":"git diff --cached","description":"TOP 12｜查看已暂存差异","copy_count":0},{"title":"git stash","content":"git stash","description":"TOP 13｜暂存现场","copy_count":0},{"title":"git stash pop","content":"git stash pop","description":"TOP 14｜恢复暂存","copy_count":0},{"title":"git rebase --continue","content":"git rebase --continue","description":"TOP 15｜继续 rebase","copy_count":0},{"title":"git rebase --abort","content":"git rebase --abort","description":"TOP 16｜中止 rebase","copy_count":0},{"title":"git reset --hard","content":"git reset --hard HEAD~1","description":"TOP 17｜回退一次提交（危险）","copy_count":0},{"title":"git revert","content":"git revert HEAD","description":"TOP 18｜安全回滚提交","copy_count":0},{"title":"git branch -d","content":"git branch -d dev","description":"TOP 19｜删除本地分支","copy_count":0},{"title":"git push --delete","content":"git push origin --delete dev","description":"TOP 20｜删除远端分支","copy_count":0}]}
+[
+  {"title":"git status","content":"git status","description":"TOP 1｜查看状态"},
+  {"title":"git pull","content":"git pull origin dev","description":"TOP 2｜拉取代码"},
+  {"title":"git pull --rebase","content":"git pull --rebase origin dev","description":"TOP 2｜拉取代码（变基方式）"},
+  {"title":"git branch","content":"git branch","description":"TOP 3｜查看本地分支"},
+  {"title":"git branch -a","content":"git branch -a","description":"TOP 3｜查看所有分支"},
+  {"title":"git switch","content":"git switch dev","description":"TOP 4｜切换分支"},
+  {"title":"git switch -c","content":"git switch -c feature/xxx","description":"TOP 5｜创建并切换分支"},
+  {"title":"git log","content":"git log --oneline --graph --decorate","description":"TOP 6｜查看提交历史"},
+  {"title":"git add .","content":"git add .","description":"TOP 7｜暂存所有改动"},
+  {"title":"git commit","content":"git commit -m \"feat: your message\"","description":"TOP 8｜提交代码"},
+  {"title":"git push","content":"git push origin dev","description":"TOP 9｜推送到远端"},
+  {"title":"git fetch","content":"git fetch origin","description":"TOP 10｜仅拉取不合并"},
+  {"title":"git diff","content":"git diff","description":"TOP 11｜查看差异"},
+  {"title":"git diff --cached","content":"git diff --cached","description":"TOP 12｜查看已暂存差异"},
+  {"title":"git stash","content":"git stash","description":"TOP 13｜暂存现场"},
+  {"title":"git stash pop","content":"git stash pop","description":"TOP 14｜恢复暂存"},
+  {"title":"git rebase --continue","content":"git rebase --continue","description":"TOP 15｜继续 rebase"},
+  {"title":"git rebase --abort","content":"git rebase --abort","description":"TOP 16｜中止 rebase"},
+  {"title":"git reset --hard","content":"git reset --hard HEAD~1","description":"TOP 17｜回退一次提交（危险）"},
+  {"title":"git revert","content":"git revert HEAD","description":"TOP 18｜安全回滚提交"},
+  {"title":"git branch -d","content":"git branch -d dev","description":"TOP 19｜删除本地分支"},
+  {"title":"git push --delete","content":"git push origin --delete dev","description":"TOP 20｜删除远端分支"}
+]

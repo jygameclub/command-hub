@@ -124,12 +124,17 @@ async function importTabFromJson(input) {
     try {
         // Handle both File object and string input
         const text = typeof input === 'string' ? input : await input.text();
-        const data = JSON.parse(text);
+        const parsed = JSON.parse(text);
 
-        if (!data.items || !Array.isArray(data.items)) {
-            showToast('无效的 JSON 格式');
+        // Support both formats: {items:[...]} or just [...]
+        const items = Array.isArray(parsed) ? parsed : (parsed.items || null);
+
+        if (!items || !Array.isArray(items)) {
+            showToast('无效的 JSON 格式：需要 items 数组');
             return;
         }
+
+        const data = { items };
 
         // Ask user whether to replace or append
         const replace = confirm('是否替换当前 Tab 的所有数据？\n\n点击"确定"替换，点击"取消"追加到现有数据');
