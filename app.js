@@ -27,9 +27,36 @@ function saveSort(sort) {
     currentSort = sort;
 }
 
+// Theme default colors
+const themeDefaults = {
+    'dark-blue': { command: '#4ade80', description: '#fbbf24' },
+    'dark-green': { command: '#67e8f9', description: '#fcd34d' },
+    'dark-purple': { command: '#a5f3fc', description: '#f0abfc' },
+    'dark-orange': { command: '#a3e635', description: '#fdba74' },
+    'dark-red': { command: '#86efac', description: '#fda4af' },
+    'dark-cyan': { command: '#a5f3fc', description: '#fde047' },
+    'nord': { command: '#a3be8c', description: '#ebcb8b' },
+    'monokai': { command: '#a6e22e', description: '#e6db74' },
+    'dracula': { command: '#50fa7b', description: '#f1fa8c' },
+    'solarized-dark': { command: '#859900', description: '#b58900' },
+    'light': { command: '#059669', description: '#b45309' },
+    'light-blue': { command: '#0d9488', description: '#c2410c' },
+    'light-green': { command: '#0891b2', description: '#a16207' },
+    'light-purple': { command: '#0d9488', description: '#b45309' },
+    'solarized-light': { command: '#859900', description: '#b58900' }
+};
+
 // Theme functions
 function initTheme() {
     document.documentElement.setAttribute('data-theme', currentTheme);
+    // Apply custom colors if set, otherwise use theme defaults
+    const defaults = themeDefaults[currentTheme] || themeDefaults['dark-blue'];
+    const savedCommandColor = localStorage.getItem('commandhub_command_color');
+    const savedDescriptionColor = localStorage.getItem('commandhub_description_color');
+
+    commandColor = savedCommandColor || defaults.command;
+    descriptionColor = savedDescriptionColor || defaults.description;
+
     document.documentElement.style.setProperty('--command-color', commandColor);
     document.documentElement.style.setProperty('--description-color', descriptionColor);
     updateThemeUI();
@@ -40,7 +67,21 @@ function setTheme(theme) {
     currentTheme = theme;
     localStorage.setItem('commandhub_theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
+
+    // Reset colors to theme defaults when switching themes
+    const defaults = themeDefaults[theme] || themeDefaults['dark-blue'];
+    commandColor = defaults.command;
+    descriptionColor = defaults.description;
+
+    // Clear custom color settings so theme defaults apply
+    localStorage.removeItem('commandhub_command_color');
+    localStorage.removeItem('commandhub_description_color');
+
+    document.documentElement.style.setProperty('--command-color', commandColor);
+    document.documentElement.style.setProperty('--description-color', descriptionColor);
+
     updateThemeUI();
+    updateColorInputs();
 }
 
 function updateThemeUI() {
@@ -79,17 +120,23 @@ function updateColorPreview() {
 }
 
 function resetCommandColor() {
-    const defaultColor = '#d1fae5';
-    setCommandColor(defaultColor);
-    document.getElementById('command-color-picker').value = defaultColor;
-    document.getElementById('command-color-input').value = defaultColor;
+    const defaults = themeDefaults[currentTheme] || themeDefaults['dark-blue'];
+    commandColor = defaults.command;
+    localStorage.removeItem('commandhub_command_color');
+    document.documentElement.style.setProperty('--command-color', commandColor);
+    document.getElementById('command-color-picker').value = commandColor;
+    document.getElementById('command-color-input').value = commandColor;
+    updateColorPreview();
 }
 
 function resetDescriptionColor() {
-    const defaultColor = '#6b7280';
-    setDescriptionColor(defaultColor);
-    document.getElementById('description-color-picker').value = defaultColor;
-    document.getElementById('description-color-input').value = defaultColor;
+    const defaults = themeDefaults[currentTheme] || themeDefaults['dark-blue'];
+    descriptionColor = defaults.description;
+    localStorage.removeItem('commandhub_description_color');
+    document.documentElement.style.setProperty('--description-color', descriptionColor);
+    document.getElementById('description-color-picker').value = descriptionColor;
+    document.getElementById('description-color-input').value = descriptionColor;
+    updateColorPreview();
 }
 
 // Settings Modal

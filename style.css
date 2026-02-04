@@ -5,15 +5,17 @@
     --bg-tertiary: #0b1020;
     --text-primary: #e6e6eb;
     --text-secondary: #a5b4fc;
-    --text-muted: #6b7280;
+    --text-muted: #9ca3af;
     --accent: #7dd3fc;
     --accent-secondary: #818cf8;
     --border-color: #1f2937;
     --success: #d1fae5;
     --warning: #fbbf24;
-    --command-color: #d1fae5;
-    --description-color: #6b7280;
+    --command-color: #4ade80;
+    --description-color: #fbbf24;
 }
+
+/* ===== DARK THEMES ===== */
 
 /* Theme: Dark Blue (Default) */
 [data-theme="dark-blue"] {
@@ -22,9 +24,12 @@
     --bg-tertiary: #0b1020;
     --text-primary: #e6e6eb;
     --text-secondary: #a5b4fc;
+    --text-muted: #9ca3af;
     --accent: #7dd3fc;
     --accent-secondary: #818cf8;
     --border-color: #1f2937;
+    --command-color: #4ade80;
+    --description-color: #fbbf24;
 }
 
 /* Theme: Dark Green */
@@ -34,9 +39,12 @@
     --bg-tertiary: #0a140f;
     --text-primary: #e6ebe8;
     --text-secondary: #86efac;
+    --text-muted: #9ca3af;
     --accent: #4ade80;
     --accent-secondary: #22c55e;
     --border-color: #1f3729;
+    --command-color: #67e8f9;
+    --description-color: #fcd34d;
 }
 
 /* Theme: Dark Purple */
@@ -46,9 +54,12 @@
     --bg-tertiary: #140a18;
     --text-primary: #ebe6ef;
     --text-secondary: #d8b4fe;
+    --text-muted: #a78bfa;
     --accent: #c084fc;
     --accent-secondary: #a855f7;
     --border-color: #371f47;
+    --command-color: #a5f3fc;
+    --description-color: #f0abfc;
 }
 
 /* Theme: Dark Orange */
@@ -58,10 +69,90 @@
     --bg-tertiary: #141005;
     --text-primary: #f5f0e6;
     --text-secondary: #fcd34d;
+    --text-muted: #d4a574;
     --accent: #fb923c;
     --accent-secondary: #f97316;
     --border-color: #3d2f1a;
+    --command-color: #a3e635;
+    --description-color: #fdba74;
 }
+
+/* Theme: Dark Red */
+[data-theme="dark-red"] {
+    --bg-primary: #1a0f0f;
+    --bg-secondary: #2a1515;
+    --bg-tertiary: #140a0a;
+    --text-primary: #f5e6e6;
+    --text-secondary: #fca5a5;
+    --text-muted: #f87171;
+    --accent: #f87171;
+    --accent-secondary: #ef4444;
+    --border-color: #3d1f1f;
+    --command-color: #86efac;
+    --description-color: #fda4af;
+}
+
+/* Theme: Dark Cyan */
+[data-theme="dark-cyan"] {
+    --bg-primary: #0f1a1a;
+    --bg-secondary: #142626;
+    --bg-tertiary: #0a1414;
+    --text-primary: #e6f5f5;
+    --text-secondary: #5eead4;
+    --text-muted: #2dd4bf;
+    --accent: #22d3ee;
+    --accent-secondary: #06b6d4;
+    --border-color: #1f3737;
+    --command-color: #a5f3fc;
+    --description-color: #fde047;
+}
+
+/* Theme: Nord */
+[data-theme="nord"] {
+    --bg-primary: #2e3440;
+    --bg-secondary: #3b4252;
+    --bg-tertiary: #282c34;
+    --text-primary: #eceff4;
+    --text-secondary: #88c0d0;
+    --text-muted: #81a1c1;
+    --accent: #88c0d0;
+    --accent-secondary: #81a1c1;
+    --border-color: #4c566a;
+    --command-color: #a3be8c;
+    --description-color: #ebcb8b;
+}
+
+/* Theme: Monokai */
+[data-theme="monokai"] {
+    --bg-primary: #272822;
+    --bg-secondary: #3e3d32;
+    --bg-tertiary: #1e1f1c;
+    --text-primary: #f8f8f2;
+    --text-secondary: #a6e22e;
+    --text-muted: #75715e;
+    --accent: #66d9ef;
+    --accent-secondary: #ae81ff;
+    --border-color: #49483e;
+    --command-color: #a6e22e;
+    --description-color: #e6db74;
+}
+
+/* Theme: Dracula */
+[data-theme="dracula"] {
+    --bg-primary: #282a36;
+    --bg-secondary: #343746;
+    --bg-tertiary: #21222c;
+    --text-primary: #f8f8f2;
+    --text-secondary: #bd93f9;
+    --text-muted: #6272a4;
+    --accent: #8be9fd;
+    --accent-secondary: #ff79c6;
+    --border-color: #44475a;
+    --command-color: #50fa7b;
+    --description-color: #f1fa8c;
+}
+
+/* ===== LIGHT THEMES ===== */
 
 /* Theme: Light */
 [data-theme="light"] {
@@ -70,11 +161,88 @@
     --bg-tertiary: #f1f5f9;
     --text-primary: #1e293b;
     --text-secondary: #475569;
+    --text-muted: #64748b;
     --accent: #0284c7;
     --accent-secondary: #6366f1;
     --border-color: #e2e8f0;
-    --text-muted: #64748b;
     --warning: #d97706;
+    --command-color: #059669;
+    --description-color: #b45309;
+}
+
+/* Theme: Light Blue */
+[data-theme="light-blue"] {
+    --bg-primary: #eff6ff;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #dbeafe;
+    --text-primary: #1e3a5f;
+    --text-secondary: #3b82f6;
+    --text-muted: #6b7280;
+    --accent: #2563eb;
+    --accent-secondary: #3b82f6;
+    --border-color: #bfdbfe;
+    --command-color: #0d9488;
+    --description-color: #c2410c;
+}
+
+/* Theme: Light Green */
+[data-theme="light-green"] {
+    --bg-primary: #f0fdf4;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #dcfce7;
+    --text-primary: #14532d;
+    --text-secondary: #16a34a;
+    --text-muted: #6b7280;
+    --accent: #16a34a;
+    --accent-secondary: #22c55e;
+    --border-color: #bbf7d0;
+    --command-color: #0891b2;
+    --description-color: #a16207;
+}
+
+/* Theme: Light Purple */
+[data-theme="light-purple"] {
+    --bg-primary: #faf5ff;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f3e8ff;
+    --text-primary: #3b0764;
+    --text-secondary: #9333ea;
+    --text-muted: #6b7280;
+    --accent: #9333ea;
+    --accent-secondary: #a855f7;
+    --border-color: #e9d5ff;
+    --command-color: #0d9488;
+    --description-color: #b45309;
+}
+
+/* Theme: Solarized Light */
+[data-theme="solarized-light"] {
+    --bg-primary: #fdf6e3;
+    --bg-secondary: #eee8d5;
+    --bg-tertiary: #f5efdc;
+    --text-primary: #657b83;
+    --text-secondary: #268bd2;
+    --text-muted: #93a1a1;
+    --accent: #2aa198;
+    --accent-secondary: #268bd2;
+    --border-color: #d3cbb7;
+    --command-color: #859900;
+    --description-color: #b58900;
+}
+
+/* Theme: Solarized Dark */
+[data-theme="solarized-dark"] {
+    --bg-primary: #002b36;
+    --bg-secondary: #073642;
+    --bg-tertiary: #001f27;
+    --text-primary: #839496;
+    --text-secondary: #2aa198;
+    --text-muted: #586e75;
+    --accent: #268bd2;
+    --accent-secondary: #2aa198;
+    --border-color: #094352;
+    --command-color: #859900;
+    --description-color: #b58900;
 }
 
 * {
@@ -580,13 +748,13 @@ header h1 {
 /* Settings Modal */
 .theme-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
 }
 
 .theme-option {
-    padding: 12px;
+    padding: 8px;
     border: 2px solid var(--border-color);
     border-radius: 8px;
     cursor: pointer;
@@ -597,23 +765,28 @@ header h1 {
 
 .theme-option:hover {
     border-color: var(--accent);
+    transform: scale(1.02);
 }
 
 .theme-option.active {
     border-color: var(--accent);
     background: var(--bg-secondary);
+    box-shadow: 0 0 0 2px var(--accent);
 }
 
 .theme-preview {
     width: 100%;
-    height: 30px;
+    height: 24px;
     border-radius: 4px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .theme-name {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .color-settings {
@@ -740,5 +913,20 @@ header h1 {
 
     .command-line .btn {
         align-self: flex-end;
+    }
+
+    .theme-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .color-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .color-input-group {
+        width: 100%;
+        justify-content: flex-start;
     }
 }
