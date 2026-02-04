@@ -139,6 +139,16 @@ header h1 {
     background: var(--bg-secondary);
 }
 
+.btn-icon-green {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+.btn-icon-green:hover {
+    background: #059669;
+    border-color: #059669;
+}
+
 /* Tabs */
 .tabs {
     display: flex;
