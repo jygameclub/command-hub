@@ -419,6 +419,25 @@ header h1 {
     flex: 1;
 }
 
+.tab-danger-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.tab-danger-btns .btn {
+    flex: 1;
+}
+
+.btn-warning {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #000;
+}
+
+.btn-warning:hover {
+    background: #d97706;
+}
+
 .btn-danger {
     background: #dc3545;
     border-color: #dc3545;

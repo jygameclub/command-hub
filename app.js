@@ -438,6 +438,17 @@ function openTabModal(tab = null) {
     document.getElementById('tab-name').focus();
 }
 
+function handleClearCurrentTab() {
+    const tabId = parseInt(document.getElementById('tab-id').value);
+    if (!tabId) return;
+    if (!confirm('确定清空此 Tab 的所有内容？此操作不可恢复！')) return;
+    db.run('DELETE FROM items WHERE tab_id = ?', [tabId]);
+    saveToIndexedDB();
+    closeTabModal();
+    loadItems();
+    showToast('已清空当前 Tab');
+}
+
 function handleDeleteCurrentTab() {
     const tabId = parseInt(document.getElementById('tab-id').value);
     if (!tabId) return;

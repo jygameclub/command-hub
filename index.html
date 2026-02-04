@@ -68,7 +68,10 @@
                         <button type="button" class="btn" onclick="handleMoveTab(parseInt(document.getElementById('tab-id').value), 'up')">← 左移</button>
                         <button type="button" class="btn" onclick="handleMoveTab(parseInt(document.getElementById('tab-id').value), 'down')">右移 →</button>
                     </div>
-                    <button type="button" class="btn btn-danger" onclick="handleDeleteCurrentTab()">删除此 Tab</button>
+                    <div class="tab-danger-btns">
+                        <button type="button" class="btn btn-warning" onclick="handleClearCurrentTab()">清空内容</button>
+                        <button type="button" class="btn btn-danger" onclick="handleDeleteCurrentTab()">删除 Tab</button>
+                    </div>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn" onclick="closeTabModal()">取消</button>
