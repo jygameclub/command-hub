@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Command Hub</h1>
+            <div class="header-actions">
+                <button id="import-btn" class="btn">导入</button>
+                <button id="export-btn" class="btn">导出</button>
+                <button id="add-tab-btn" class="btn btn-primary">+ 新建 Tab</button>
+            </div>
+        </header>
+
+        <nav class="tabs" id="tabs-nav"></nav>
+
+        <div class="toolbar">
+            <div class="sort-options">
+                <label>排序:</label>
+                <select id="sort-select">
+                    <option value="order">自定义顺序</option>
+                    <option value="count">按复制次数</option>
+                </select>
+            </div>
+            <button id="add-item-btn" class="btn btn-primary">+ 添加项目</button>
+        </div>
+
+        <main class="items-list" id="items-list"></main>
+    </div>
+
+    <!-- Tab Modal -->
+    <div id="tab-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="tab-modal-title">新建 Tab</h2>
+            <form id="tab-form">
+                <input type="hidden" id="tab-id">
+                <div class="form-group">
+                    <label for="tab-name">名称</label>
+                    <input type="text" id="tab-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="tab-type">类型</label>
+                    <select id="tab-type">
+                        <option value="command">命令</option>
+                        <option value="note">笔记</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeTabModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Item Modal -->
+    <div id="item-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="item-modal-title">添加项目</h2>
+            <form id="item-form">
+                <input type="hidden" id="item-id">
+                <div class="form-group">
+                    <label for="item-title">标题</label>
+                    <input type="text" id="item-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-content">内容</label>
+                    <textarea id="item-content" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="item-description">描述</label>
+                    <input type="text" id="item-description">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeItemModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="import-file" accept=".db" style="display:none">
+
+    <!-- sql.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
