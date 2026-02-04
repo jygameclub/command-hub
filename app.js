@@ -166,6 +166,136 @@ async function handleDeleteTab(tabId) {
     await loadTabs();
 }
 
+// Item operations
+async function loadItems() {
+    if (!currentTabId) {
+        document.getElementById('items-list').innerHTML = '<p class="empty-state">请选择一个 Tab</p>';
+        return;
+    }
+
+    const orderBy = currentSort === 'count' ? 'copy_count DESC' : 'sort_order ASC';
+    const result = db.exec(`SELECT * FROM items WHERE tab_id = ? ORDER BY ${orderBy}`, [currentTabId]);
+
+    items = result.length > 0 ? result[0].values.map(row => ({
+        id: row[0],
+        tab_id: row[1],
+        title: row[2],
+        content: row[3],
+        description: row[4],
+        copy_count: row[5],
+        sort_order: row[6]
+    })) : [];
+
+    renderItems();
+}
+
+function createItem(tabId, title, content, description) {
+    const maxOrder = db.exec('SELECT COALESCE(MAX(sort_order), 0) FROM items WHERE tab_id = ?', [tabId]);
+    const order = (maxOrder[0]?.values[0][0] || 0) + 1;
+    db.run('INSERT INTO items (tab_id, title, content, description, sort_order) VALUES (?, ?, ?, ?, ?)',
+        [tabId, title, content, description, order]);
+    saveToIndexedDB();
+}
+
+function updateItem(id, title, content, description) {
+    db.run('UPDATE items SET title = ?, content = ?, description = ? WHERE id = ?',
+        [title, content, description, id]);
+    saveToIndexedDB();
+}
+
+function deleteItem(id) {
+    db.run('DELETE FROM items WHERE id = ?', [id]);
+    saveToIndexedDB();
+}
+
+function incrementCopyCount(id) {
+    db.run('UPDATE items SET copy_count = copy_count + 1 WHERE id = ?', [id]);
+    saveToIndexedDB();
+}
+
+function moveItem(id, direction) {
+    const current = items.find(i => i.id === id);
+    if (!current) return;
+
+    const idx = items.indexOf(current);
+    const neighborIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (neighborIdx < 0 || neighborIdx >= items.length) return;
+
+    const neighbor = items[neighborIdx];
+    db.run('UPDATE items SET sort_order = ? WHERE id = ?', [neighbor.sort_order, id]);
+    db.run('UPDATE items SET sort_order = ? WHERE id = ?', [current.sort_order, neighbor.id]);
+    saveToIndexedDB();
+}
+
+function renderItems() {
+    const list = document.getElementById('items-list');
+    const currentTab = tabs.find(t => t.id === currentTabId);
+    const isCommand = currentTab?.type === 'command';
+
+    if (items.length === 0) {
+        list.innerHTML = '<p class="empty-state">暂无内容，点击"添加项目"创建</p>';
+        return;
+    }
+
+    list.innerHTML = items.map(item => `
+        <div class="item-card" data-id="${item.id}">
+            <div class="item-header">
+                <span class="item-title">${escapeHtml(item.title)}</span>
+                <div class="item-actions">
+                    ${isCommand ? `<button class="btn btn-primary btn-small" onclick="handleCopyItem(${item.id})">复制</button>` : ''}
+                    <button class="btn-icon" onclick="handleMoveItem(${item.id}, 'up')" title="上移">↑</button>
+                    <button class="btn-icon" onclick="handleMoveItem(${item.id}, 'down')" title="下移">↓</button>
+                    <button class="btn-icon" onclick="editItem(${item.id})" title="编辑">✏️</button>
+                    <button class="btn-icon" onclick="handleDeleteItem(${item.id})" title="删除">🗑️</button>
+                </div>
+            </div>
+            <div class="item-content">${escapeHtml(item.content)}</div>
+            <div class="item-footer">
+                <span class="item-description">${escapeHtml(item.description || '')}</span>
+                ${isCommand ? `<span class="copy-count">已复制 ${item.copy_count} 次</span>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+async function handleCopyItem(itemId) {
+    const item = items.find(i => i.id === itemId);
+    await navigator.clipboard.writeText(item.content);
+    incrementCopyCount(itemId);
+    showToast('已复制到剪贴板');
+    await loadItems();
+}
+
+async function handleMoveItem(itemId, direction) {
+    moveItem(itemId, direction);
+    await loadItems();
+}
+
+async function handleDeleteItem(itemId) {
+    if (!confirm('确定删除此项目？')) return;
+    deleteItem(itemId);
+    await loadItems();
+}
+
+// Utility functions
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text || '';
+    return div.innerHTML;
+}
+
+function showToast(message) {
+    let toast = document.querySelector('.toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.className = 'toast';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
 // Initialize sql.js and database
 async function initDatabase() {
     const SQL = await initSqlJs({
