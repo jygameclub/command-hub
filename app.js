@@ -157,7 +157,7 @@ async function importTabFromJson(input) {
         showToast(`已导入 ${data.items.length} 个项目`);
         return true;
     } catch (e) {
-        showToast('导入失败：无效的 JSON 格式');
+        showToast('导入失败：' + e.message);
         console.error(e);
         return false;
     }
