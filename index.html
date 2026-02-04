@@ -11,6 +11,11 @@
         <header>
             <h1>Command Hub</h1>
             <div class="header-actions">
+                <div class="font-size-control">
+                    <span>A-</span>
+                    <input type="range" id="font-size-slider" min="12" max="24" value="16">
+                    <span>A+</span>
+                </div>
                 <button id="import-btn" class="btn">导入</button>
                 <button id="export-btn" class="btn">导出</button>
                 <button id="add-tab-btn" class="btn btn-primary">+ 新建 Tab</button>
@@ -24,13 +29,15 @@
             <div class="sort-options">
                 <label>排序:</label>
                 <select id="sort-select">
-                    <option value="order">自定义顺序</option>
-                    <option value="count">按复制次数</option>
+                    <option value="order_asc">自定义顺序 ↑</option>
+                    <option value="order_desc">自定义顺序 ↓</option>
+                    <option value="count_desc">复制次数 ↓</option>
+                    <option value="count_asc">复制次数 ↑</option>
                 </select>
             </div>
             <div class="toolbar-actions">
-                <button id="export-json-btn" class="btn btn-small">导出 JSON</button>
-                <button id="import-json-btn" class="btn btn-small">导入 JSON</button>
+                <button id="export-json-btn" class="btn btn-icon-square" title="导出 JSON">📤</button>
+                <button id="import-json-btn" class="btn btn-icon-square" title="导入 JSON">📥</button>
                 <button id="add-item-btn" class="btn btn-primary">+ 添加项目</button>
             </div>
         </div>

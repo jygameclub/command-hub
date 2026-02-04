@@ -3,9 +3,26 @@ let db = null;
 let tabs = [];
 let currentTabId = null;
 let items = [];
-let currentSort = 'order';
+let currentSort = localStorage.getItem('commandhub_sort') || 'order_asc';
 
 const DB_NAME = 'command-hub-db';
+
+// Font size control
+function initFontSize() {
+    const saved = localStorage.getItem('commandhub_fontsize') || '16';
+    document.documentElement.style.setProperty('--base-font-size', saved + 'px');
+    document.getElementById('font-size-slider').value = saved;
+}
+
+function saveFontSize(size) {
+    localStorage.setItem('commandhub_fontsize', size);
+    document.documentElement.style.setProperty('--base-font-size', size + 'px');
+}
+
+function saveSort(sort) {
+    localStorage.setItem('commandhub_sort', sort);
+    currentSort = sort;
+}
 
 // IndexedDB helpers
 function openIndexedDB() {
@@ -268,7 +285,14 @@ async function loadItems() {
         return;
     }
 
-    const orderBy = currentSort === 'count' ? 'copy_count DESC' : 'sort_order ASC';
+    // Support: order_asc, order_desc, count_asc, count_desc
+    const sortMap = {
+        'order_asc': 'sort_order ASC',
+        'order_desc': 'sort_order DESC',
+        'count_asc': 'copy_count ASC',
+        'count_desc': 'copy_count DESC'
+    };
+    const orderBy = sortMap[currentSort] || 'sort_order ASC';
     const result = db.exec(`SELECT * FROM items WHERE tab_id = ? ORDER BY ${orderBy}`, [currentTabId]);
 
     items = result.length > 0 ? result[0].values.map(row => ({
@@ -538,6 +562,10 @@ function createTables() {
 
 // Start the app
 initDatabase();
+initFontSize();
+
+// Restore saved sort option
+document.getElementById('sort-select').value = currentSort;
 
 // Import/Export event listeners
 document.getElementById('export-btn').addEventListener('click', exportDatabase);
@@ -571,8 +599,13 @@ document.getElementById('add-item-btn').addEventListener('click', () => {
 });
 
 document.getElementById('sort-select').addEventListener('change', (e) => {
-    currentSort = e.target.value;
+    saveSort(e.target.value);
     loadItems();
+});
+
+// Font size control
+document.getElementById('font-size-slider').addEventListener('input', (e) => {
+    saveFontSize(e.target.value);
 });
 
 // Close modal on outside click
