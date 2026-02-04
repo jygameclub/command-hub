@@ -7,6 +7,48 @@ let currentSort = 'order';
 
 const DB_NAME = 'command-hub-db';
 
+// IndexedDB helpers
+function openIndexedDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+        request.onupgradeneeded = (event) => {
+            const idb = event.target.result;
+            if (!idb.objectStoreNames.contains('database')) {
+                idb.createObjectStore('database');
+            }
+        };
+    });
+}
+
+async function saveToIndexedDB() {
+    const data = db.export();
+    const idb = await openIndexedDB();
+    return new Promise((resolve, reject) => {
+        const tx = idb.transaction('database', 'readwrite');
+        const store = tx.objectStore('database');
+        const request = store.put(data, 'sqlite');
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function loadFromIndexedDB() {
+    try {
+        const idb = await openIndexedDB();
+        return new Promise((resolve, reject) => {
+            const tx = idb.transaction('database', 'readonly');
+            const store = tx.objectStore('database');
+            const request = store.get('sqlite');
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    } catch {
+        return null;
+    }
+}
+
 // Initialize sql.js and database
 async function initDatabase() {
     const SQL = await initSqlJs({
