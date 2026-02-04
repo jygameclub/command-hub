@@ -432,3 +432,35 @@ document.getElementById('import-file').addEventListener('change', (e) => {
         e.target.value = '';
     }
 });
+
+// Event listeners
+document.getElementById('add-tab-btn').addEventListener('click', () => openTabModal());
+
+document.getElementById('add-item-btn').addEventListener('click', () => {
+    if (!currentTabId) {
+        showToast('请先选择一个 Tab');
+        return;
+    }
+    openItemModal();
+});
+
+document.getElementById('sort-select').addEventListener('change', (e) => {
+    currentSort = e.target.value;
+    loadItems();
+});
+
+// Close modal on outside click
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('show');
+        }
+    });
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+    }
+});
