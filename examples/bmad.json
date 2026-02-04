@@ -1,0 +1,6 @@
+[
+  {"title":"Quick Spec","content":"/bmad-bmm-quick-spec","description":"1️⃣ 你开始说话 - 快速描述需求"},
+  {"title":"Create Story","content":"/bmad-bmm-create-story","description":"2️⃣ 机器帮你拆 - 自动拆分用户故事"},
+  {"title":"Advanced Elicitation","content":"/bmad-bmm-advanced-elicitation","description":"3️⃣ 深挖风险（可选）- 风险分析"},
+  {"title":"Dev Story","content":"/dev-story","description":"4️⃣ 写代码 - 开始开发实现"}
+]
