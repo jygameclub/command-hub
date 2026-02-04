@@ -485,6 +485,7 @@ function renderItems() {
     const list = document.getElementById('items-list');
     const currentTab = tabs.find(t => t.id === currentTabId);
     const isCommand = currentTab?.type === 'command';
+    const isUrl = currentTab?.type === 'url';
 
     if (items.length === 0) {
         list.innerHTML = '<p class="empty-state">暂无内容，点击"添加项目"创建</p>';
@@ -492,17 +493,27 @@ function renderItems() {
     }
 
     list.innerHTML = items.map(item => {
-        // Split content by newlines to support multiple commands
-        const commands = item.content.split('\n').filter(cmd => cmd.trim());
+        // Split content by newlines to support multiple commands/urls
+        const lines = item.content.split('\n').filter(line => line.trim());
 
-        const commandsHtml = isCommand
-            ? commands.map((cmd, idx) => `
+        let contentHtml;
+        if (isCommand) {
+            contentHtml = lines.map((cmd, idx) => `
                 <div class="command-line">
                     <code>${escapeHtml(cmd)}</code>
                     <button class="btn btn-primary btn-small" onclick="handleCopyCommand(${item.id}, ${idx}, '${escapeHtml(cmd).replace(/'/g, "\\'")}')">复制</button>
                 </div>
-            `).join('')
-            : `<div class="item-content">${escapeHtml(item.content)}</div>`;
+            `).join('');
+        } else if (isUrl) {
+            contentHtml = lines.map((url, idx) => `
+                <div class="command-line">
+                    <code>${escapeHtml(url)}</code>
+                    <button class="btn btn-primary btn-small" onclick="handleOpenUrl(${item.id}, '${escapeHtml(url).replace(/'/g, "\\'")}')">打开</button>
+                </div>
+            `).join('');
+        } else {
+            contentHtml = `<div class="item-content">${escapeHtml(item.content)}</div>`;
+        }
 
         return `
             <div class="item-card" data-id="${item.id}">
@@ -515,9 +526,10 @@ function renderItems() {
                         <button class="btn-icon" onclick="handleDeleteItem(${item.id})" title="删除">🗑️</button>
                     </div>
                 </div>
-                ${isCommand ? `<div class="commands-list">${commandsHtml}</div>` : commandsHtml}
+                ${(isCommand || isUrl) ? `<div class="commands-list">${contentHtml}</div>` : contentHtml}
                 <div class="item-footer">
                     ${isCommand ? `<span class="copy-count">已复制 ${item.copy_count} 次</span>` : ''}
+                    ${isUrl ? `<span class="copy-count">已打开 ${item.copy_count} 次</span>` : ''}
                 </div>
             </div>
         `;
@@ -528,6 +540,13 @@ async function handleCopyCommand(itemId, cmdIndex, cmdText) {
     await navigator.clipboard.writeText(cmdText);
     incrementCopyCount(itemId);
     showToast('已复制到剪贴板');
+    await loadItems();
+}
+
+async function handleOpenUrl(itemId, url) {
+    window.open(url, '_blank');
+    incrementCopyCount(itemId);
+    showToast('已在新标签页打开');
     await loadItems();
 }
 
