@@ -215,7 +215,7 @@ async function importDatabase(file) {
 
     try {
         db = new SQL.Database(data);
-        await saveToIndexedDB();
+        migrateDatabase();
         await loadTabs();
         showToast('数据库已导入');
     } catch (e) {
