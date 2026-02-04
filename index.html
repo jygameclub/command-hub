@@ -27,7 +27,11 @@
                     <option value="count">按复制次数</option>
                 </select>
             </div>
-            <button id="add-item-btn" class="btn btn-primary">+ 添加项目</button>
+            <div class="toolbar-actions">
+                <button id="export-json-btn" class="btn btn-small">导出 JSON</button>
+                <button id="import-json-btn" class="btn btn-small">导入 JSON</button>
+                <button id="add-item-btn" class="btn btn-primary">+ 添加项目</button>
+            </div>
         </div>
 
         <main class="items-list" id="items-list"></main>
@@ -86,6 +90,7 @@
 
     <!-- Hidden file input for import -->
     <input type="file" id="import-file" accept=".db" style="display:none">
+    <input type="file" id="import-json-file" accept=".json" style="display:none">
 
     <!-- sql.js from CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>

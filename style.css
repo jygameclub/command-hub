@@ -159,6 +159,12 @@ header h1 {
     font-size: 14px;
 }
 
+.toolbar-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 /* Items */
 .items-list {
     display: flex;
@@ -345,6 +351,11 @@ header h1 {
 
     .sort-options {
         justify-content: space-between;
+    }
+
+    .toolbar-actions {
+        width: 100%;
+        justify-content: flex-end;
     }
 
     .item-header {

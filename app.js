@@ -82,6 +82,84 @@ async function importDatabase(file) {
     }
 }
 
+// Export current tab as JSON
+function exportTabAsJson() {
+    if (!currentTabId) {
+        showToast('请先选择一个 Tab');
+        return;
+    }
+
+    const currentTab = tabs.find(t => t.id === currentTabId);
+    const data = {
+        tab: {
+            name: currentTab.name,
+            type: currentTab.type
+        },
+        items: items.map(item => ({
+            title: item.title,
+            content: item.content,
+            description: item.description || '',
+            copy_count: item.copy_count || 0
+        }))
+    };
+
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${currentTab.name}-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('JSON 已导出');
+}
+
+// Import JSON to current tab
+async function importTabFromJson(file) {
+    if (!currentTabId) {
+        showToast('请先选择一个 Tab');
+        return;
+    }
+
+    try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        if (!data.items || !Array.isArray(data.items)) {
+            showToast('无效的 JSON 格式');
+            return;
+        }
+
+        // Ask user whether to replace or append
+        const replace = confirm('是否替换当前 Tab 的所有数据？\n\n点击"确定"替换，点击"取消"追加到现有数据');
+
+        if (replace) {
+            // Delete existing items
+            db.run('DELETE FROM items WHERE tab_id = ?', [currentTabId]);
+        }
+
+        // Get current max sort_order
+        const maxOrderResult = db.exec('SELECT COALESCE(MAX(sort_order), 0) FROM items WHERE tab_id = ?', [currentTabId]);
+        let order = (maxOrderResult[0]?.values[0][0] || 0);
+
+        // Insert new items
+        for (const item of data.items) {
+            order++;
+            db.run(
+                'INSERT INTO items (tab_id, title, content, description, copy_count, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
+                [currentTabId, item.title, item.content, item.description || '', item.copy_count || 0, order]
+            );
+        }
+
+        await saveToIndexedDB();
+        await loadItems();
+        showToast(`已导入 ${data.items.length} 个项目`);
+    } catch (e) {
+        showToast('导入失败：无效的 JSON 文件');
+        console.error(e);
+    }
+}
+
 // Tab operations
 async function loadTabs() {
     const result = db.exec('SELECT * FROM tabs ORDER BY sort_order');
@@ -462,5 +540,21 @@ document.querySelectorAll('.modal').forEach(modal => {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+    }
+});
+
+// JSON Import/Export event listeners
+document.getElementById('export-json-btn').addEventListener('click', exportTabAsJson);
+document.getElementById('import-json-btn').addEventListener('click', () => {
+    if (!currentTabId) {
+        showToast('请先选择一个 Tab');
+        return;
+    }
+    document.getElementById('import-json-file').click();
+});
+document.getElementById('import-json-file').addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        importTabFromJson(e.target.files[0]);
+        e.target.value = '';
     }
 });
