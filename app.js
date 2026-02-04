@@ -692,6 +692,8 @@ async function initDatabase() {
     const savedData = await loadFromIndexedDB();
     if (savedData) {
         db = new SQL.Database(savedData);
+        // Migrate existing database to support 'url' type
+        migrateDatabase();
     } else {
         db = new SQL.Database();
         createTables();
@@ -700,12 +702,50 @@ async function initDatabase() {
     await loadTabs();
 }
 
+// Migrate database to support new tab types
+function migrateDatabase() {
+    try {
+        // Check if migration is needed by trying to insert a test value
+        // SQLite CHECK constraints are enforced on INSERT/UPDATE, not on table existence
+        // We need to recreate the table to update the CHECK constraint
+
+        // Get existing tabs data
+        const tabsResult = db.exec('SELECT id, name, type, sort_order FROM tabs');
+        const tabsData = tabsResult.length > 0 ? tabsResult[0].values : [];
+
+        // Get existing items data
+        const itemsResult = db.exec('SELECT id, tab_id, title, content, description, copy_count, sort_order FROM items');
+        const itemsData = itemsResult.length > 0 ? itemsResult[0].values : [];
+
+        // Drop old tables
+        db.run('DROP TABLE IF EXISTS items');
+        db.run('DROP TABLE IF EXISTS tabs');
+
+        // Create new tables with updated CHECK constraint
+        createTables();
+
+        // Restore tabs data
+        for (const row of tabsData) {
+            db.run('INSERT INTO tabs (id, name, type, sort_order) VALUES (?, ?, ?, ?)', row);
+        }
+
+        // Restore items data
+        for (const row of itemsData) {
+            db.run('INSERT INTO items (id, tab_id, title, content, description, copy_count, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)', row);
+        }
+
+        saveToIndexedDB();
+    } catch (e) {
+        console.error('Migration error:', e);
+    }
+}
+
 function createTables() {
     db.run(`
         CREATE TABLE IF NOT EXISTS tabs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            type TEXT NOT NULL CHECK(type IN ('command', 'note')),
+            type TEXT NOT NULL CHECK(type IN ('command', 'note', 'url')),
             sort_order INTEGER NOT NULL DEFAULT 0
         )
     `);
