@@ -17,11 +17,17 @@ function initFontSize() {
     const saved = localStorage.getItem('commandhub_fontsize') || '16';
     document.documentElement.style.setProperty('--base-font-size', saved + 'px');
     document.getElementById('font-size-slider').value = saved;
+    document.getElementById('font-size-input').value = saved;
 }
 
 function saveFontSize(size) {
+    // 限制范围 12-24
+    size = Math.max(12, Math.min(24, parseInt(size) || 16));
     localStorage.setItem('commandhub_fontsize', size);
     document.documentElement.style.setProperty('--base-font-size', size + 'px');
+    // 同步滑块和输入框
+    document.getElementById('font-size-slider').value = size;
+    document.getElementById('font-size-input').value = size;
 }
 
 function saveSort(sort) {
@@ -1094,6 +1100,10 @@ document.getElementById('sort-select').addEventListener('change', (e) => {
 
 // Font size control
 document.getElementById('font-size-slider').addEventListener('input', (e) => {
+    saveFontSize(e.target.value);
+});
+
+document.getElementById('font-size-input').addEventListener('change', (e) => {
     saveFontSize(e.target.value);
 });
 
