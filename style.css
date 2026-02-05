@@ -651,9 +651,28 @@ header h1 {
     position: relative;
 }
 
-/* 设置面板更宽 */
+/* 设置面板更宽更矮 */
 #settings-modal .modal-content {
-    max-width: 700px;
+    max-width: 900px;
+    max-height: 80vh;
+}
+
+/* 设置面板两列布局 */
+#settings-modal .settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+#settings-modal .settings-column {
+    min-width: 0;
+}
+
+/* 窄屏时恢复单列 */
+@media (max-width: 700px) {
+    #settings-modal .settings-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .modal-close-btn {
@@ -842,7 +861,7 @@ header h1 {
 /* Settings Modal */
 .theme-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 8px;
     margin-bottom: 16px;
 }
@@ -884,15 +903,15 @@ header h1 {
 }
 
 .color-settings {
-    margin-top: 20px;
-    padding-top: 20px;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1px solid var(--border-color);
 }
 
 .color-settings h3 {
     font-size: 14px;
     color: var(--text-secondary);
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .color-row {
@@ -966,15 +985,15 @@ header h1 {
 
 /* Display Settings */
 .display-settings {
-    margin-top: 20px;
-    padding-top: 20px;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1px solid var(--border-color);
 }
 
 .display-settings h3 {
     font-size: 14px;
     color: var(--text-secondary);
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 }
 
 .setting-row {
@@ -998,15 +1017,15 @@ header h1 {
 
 /* Data Settings */
 .data-settings {
-    margin-top: 20px;
-    padding-top: 20px;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1px solid var(--border-color);
 }
 
 .data-settings h3 {
     font-size: 14px;
     color: var(--text-secondary);
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 }
 
 .data-actions {
@@ -1044,15 +1063,15 @@ header h1 {
 
 /* Tab Archive Settings */
 .tab-archive-settings {
-    margin-top: 20px;
-    padding-top: 20px;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1px solid var(--border-color);
 }
 
 .tab-archive-settings h3 {
     font-size: 14px;
     color: var(--text-secondary);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .archive-hint {

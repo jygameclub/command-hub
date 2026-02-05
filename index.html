@@ -165,119 +165,125 @@
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <button class="modal-close-btn" onclick="closeSettingsModal()" title="关闭">&times;</button>
-            <h2>主题设置</h2>
-            <div class="form-group">
-                <label>深色主题</label>
-                <div class="theme-grid">
-                    <div class="theme-option" data-theme="dark-blue">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #0f1220, #161a2f);"></div>
-                        <span class="theme-name">深蓝</span>
+            <h2>设置</h2>
+            <div class="settings-grid">
+                <div class="settings-column">
+                    <div class="form-group">
+                        <label>深色主题</label>
+                        <div class="theme-grid">
+                            <div class="theme-option" data-theme="dark-blue">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #0f1220, #161a2f);"></div>
+                                <span class="theme-name">深蓝</span>
+                            </div>
+                            <div class="theme-option" data-theme="dark-green">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #0f1a14, #142620);"></div>
+                                <span class="theme-name">深绿</span>
+                            </div>
+                            <div class="theme-option" data-theme="dark-purple">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #1a0f20, #261430);"></div>
+                                <span class="theme-name">深紫</span>
+                            </div>
+                            <div class="theme-option" data-theme="dark-orange">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #1a1308, #2a1f0f);"></div>
+                                <span class="theme-name">深橙</span>
+                            </div>
+                            <div class="theme-option" data-theme="dark-red">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #1a0f0f, #2a1515);"></div>
+                                <span class="theme-name">深红</span>
+                            </div>
+                            <div class="theme-option" data-theme="dark-cyan">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #0f1a1a, #142626);"></div>
+                                <span class="theme-name">深青</span>
+                            </div>
+                            <div class="theme-option" data-theme="nord">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #2e3440, #3b4252);"></div>
+                                <span class="theme-name">Nord</span>
+                            </div>
+                            <div class="theme-option" data-theme="monokai">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #272822, #3e3d32);"></div>
+                                <span class="theme-name">Monokai</span>
+                            </div>
+                            <div class="theme-option" data-theme="dracula">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #282a36, #343746);"></div>
+                                <span class="theme-name">Dracula</span>
+                            </div>
+                            <div class="theme-option" data-theme="solarized-dark">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #002b36, #073642);"></div>
+                                <span class="theme-name">Solarized</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="theme-option" data-theme="dark-green">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #0f1a14, #142620);"></div>
-                        <span class="theme-name">深绿</span>
+                    <div class="form-group">
+                        <label>浅色主题</label>
+                        <div class="theme-grid">
+                            <div class="theme-option" data-theme="light">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0);"></div>
+                                <span class="theme-name">浅灰</span>
+                            </div>
+                            <div class="theme-option" data-theme="light-blue">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #eff6ff, #dbeafe);"></div>
+                                <span class="theme-name">浅蓝</span>
+                            </div>
+                            <div class="theme-option" data-theme="light-green">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7);"></div>
+                                <span class="theme-name">浅绿</span>
+                            </div>
+                            <div class="theme-option" data-theme="light-purple">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff);"></div>
+                                <span class="theme-name">浅紫</span>
+                            </div>
+                            <div class="theme-option" data-theme="solarized-light">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #fdf6e3, #eee8d5);"></div>
+                                <span class="theme-name">Solarized</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="theme-option" data-theme="dark-purple">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #1a0f20, #261430);"></div>
-                        <span class="theme-name">深紫</span>
-                    </div>
-                    <div class="theme-option" data-theme="dark-orange">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #1a1308, #2a1f0f);"></div>
-                        <span class="theme-name">深橙</span>
-                    </div>
-                    <div class="theme-option" data-theme="dark-red">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #1a0f0f, #2a1515);"></div>
-                        <span class="theme-name">深红</span>
-                    </div>
-                    <div class="theme-option" data-theme="dark-cyan">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #0f1a1a, #142626);"></div>
-                        <span class="theme-name">深青</span>
-                    </div>
-                    <div class="theme-option" data-theme="nord">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #2e3440, #3b4252);"></div>
-                        <span class="theme-name">Nord</span>
-                    </div>
-                    <div class="theme-option" data-theme="monokai">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #272822, #3e3d32);"></div>
-                        <span class="theme-name">Monokai</span>
-                    </div>
-                    <div class="theme-option" data-theme="dracula">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #282a36, #343746);"></div>
-                        <span class="theme-name">Dracula</span>
-                    </div>
-                    <div class="theme-option" data-theme="solarized-dark">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #002b36, #073642);"></div>
-                        <span class="theme-name">Solarized</span>
+                    <div class="color-settings">
+                        <h3>自定义颜色</h3>
+                        <div class="color-row">
+                            <label>命令文字颜色</label>
+                            <div class="color-input-group">
+                                <input type="color" id="command-color-picker" value="#d1fae5">
+                                <input type="text" id="command-color-input" value="#d1fae5" maxlength="7">
+                                <button type="button" class="btn btn-reset" onclick="resetCommandColor()">重置</button>
+                            </div>
+                        </div>
+                        <div class="color-row">
+                            <label>描述文字颜色</label>
+                            <div class="color-input-group">
+                                <input type="color" id="description-color-picker" value="#6b7280">
+                                <input type="text" id="description-color-input" value="#6b7280" maxlength="7">
+                                <button type="button" class="btn btn-reset" onclick="resetDescriptionColor()">重置</button>
+                            </div>
+                        </div>
+                        <div class="color-preview">
+                            <div class="preview-command">命令预览: git status</div>
+                            <div class="preview-description">描述预览: 查看当前状态</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label>浅色主题</label>
-                <div class="theme-grid">
-                    <div class="theme-option" data-theme="light">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #f8fafc, #e2e8f0);"></div>
-                        <span class="theme-name">浅灰</span>
+                <div class="settings-column">
+                    <div class="display-settings" style="margin-top: 0; padding-top: 0; border-top: none;">
+                        <h3>显示设置</h3>
+                        <div class="setting-row">
+                            <label for="show-all-tab">显示 All 标签</label>
+                            <input type="checkbox" id="show-all-tab" checked>
+                        </div>
                     </div>
-                    <div class="theme-option" data-theme="light-blue">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #eff6ff, #dbeafe);"></div>
-                        <span class="theme-name">浅蓝</span>
+                    <div class="tab-archive-settings">
+                        <h3>Tab 归档管理</h3>
+                        <p class="archive-hint">已归档的 Tab 不会显示在标签栏中，但数据保留</p>
+                        <div id="tab-archive-list" class="tab-archive-list"></div>
                     </div>
-                    <div class="theme-option" data-theme="light-green">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7);"></div>
-                        <span class="theme-name">浅绿</span>
+                    <div class="data-settings">
+                        <h3>数据管理</h3>
+                        <div class="data-actions">
+                            <button type="button" class="btn btn-load-default" id="load-default-db">
+                                📥 加载默认数据库
+                            </button>
+                            <p class="data-hint">加载预设的示例数据（会覆盖当前数据）</p>
+                        </div>
                     </div>
-                    <div class="theme-option" data-theme="light-purple">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff);"></div>
-                        <span class="theme-name">浅紫</span>
-                    </div>
-                    <div class="theme-option" data-theme="solarized-light">
-                        <div class="theme-preview" style="background: linear-gradient(135deg, #fdf6e3, #eee8d5);"></div>
-                        <span class="theme-name">Solarized</span>
-                    </div>
-                </div>
-            </div>
-            <div class="color-settings">
-                <h3>自定义颜色</h3>
-                <div class="color-row">
-                    <label>命令文字颜色</label>
-                    <div class="color-input-group">
-                        <input type="color" id="command-color-picker" value="#d1fae5">
-                        <input type="text" id="command-color-input" value="#d1fae5" maxlength="7">
-                        <button type="button" class="btn btn-reset" onclick="resetCommandColor()">重置</button>
-                    </div>
-                </div>
-                <div class="color-row">
-                    <label>描述文字颜色</label>
-                    <div class="color-input-group">
-                        <input type="color" id="description-color-picker" value="#6b7280">
-                        <input type="text" id="description-color-input" value="#6b7280" maxlength="7">
-                        <button type="button" class="btn btn-reset" onclick="resetDescriptionColor()">重置</button>
-                    </div>
-                </div>
-                <div class="color-preview">
-                    <div class="preview-command">命令预览: git status</div>
-                    <div class="preview-description">描述预览: 查看当前状态</div>
-                </div>
-            </div>
-            <div class="display-settings">
-                <h3>显示设置</h3>
-                <div class="setting-row">
-                    <label for="show-all-tab">显示 All 标签</label>
-                    <input type="checkbox" id="show-all-tab" checked>
-                </div>
-            </div>
-            <div class="tab-archive-settings">
-                <h3>Tab 归档管理</h3>
-                <p class="archive-hint">已归档的 Tab 不会显示在标签栏中，但数据保留</p>
-                <div id="tab-archive-list" class="tab-archive-list"></div>
-            </div>
-            <div class="data-settings">
-                <h3>数据管理</h3>
-                <div class="data-actions">
-                    <button type="button" class="btn btn-load-default" id="load-default-db">
-                        📥 加载默认数据库
-                    </button>
-                    <p class="data-hint">加载预设的示例数据（会覆盖当前数据）</p>
                 </div>
             </div>
             <div class="modal-actions">
