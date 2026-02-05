@@ -678,14 +678,22 @@ async function handleCopyCommand(itemId, cmdIndex, cmdText) {
     await navigator.clipboard.writeText(cmdText);
     incrementCopyCount(itemId);
     showToast('已复制到剪贴板');
-    await loadItems();
+    if (currentTabId === ALL_TAB_ID) {
+        await loadAllItems();
+    } else {
+        await loadItems();
+    }
 }
 
 async function handleOpenUrl(itemId, url) {
     window.open(url, '_blank');
     incrementCopyCount(itemId);
     showToast('已在新标签页打开');
-    await loadItems();
+    if (currentTabId === ALL_TAB_ID) {
+        await loadAllItems();
+    } else {
+        await loadItems();
+    }
 }
 
 async function handleMoveItem(itemId, direction) {
