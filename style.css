@@ -653,7 +653,7 @@ header h1 {
 
 /* 设置面板更宽更矮 */
 #settings-modal .modal-content {
-    max-width: 900px;
+    max-width: 1080px;
     max-height: 80vh;
 }
 
