@@ -225,6 +225,41 @@ async function importDatabase(file) {
     }
 }
 
+// Load default database from def.db
+async function loadDefaultDatabase() {
+    if (!confirm('加载默认数据库会覆盖当前所有数据，确定继续吗？')) {
+        return;
+    }
+
+    try {
+        showToast('正在加载默认数据库...');
+
+        // Fetch def.db from the same directory
+        const response = await fetch('def.db');
+        if (!response.ok) {
+            throw new Error('无法加载默认数据库文件');
+        }
+
+        const buffer = await response.arrayBuffer();
+        const data = new Uint8Array(buffer);
+
+        const SQL = await initSqlJs({
+            locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}`
+        });
+
+        db = new SQL.Database(data);
+        migrateDatabase();
+        await saveToIndexedDB();
+        currentTabId = null;  // Reset current tab
+        await loadTabs();
+        showToast('默认数据库已加载');
+        closeSettingsModal();
+    } catch (e) {
+        showToast('加载失败：' + e.message);
+        console.error(e);
+    }
+}
+
 // Export current tab as JSON
 function exportTabAsJson() {
     if (!currentTabId) {
@@ -893,6 +928,9 @@ document.getElementById('description-color-input').addEventListener('change', (e
         document.getElementById('description-color-picker').value = color;
     }
 });
+
+// Load default database button
+document.getElementById('load-default-db').addEventListener('click', loadDefaultDatabase);
 
 // ===== URL Sidebar =====
 let sidebarCollapsed = localStorage.getItem('commandhub_sidebar_collapsed') === 'true';
