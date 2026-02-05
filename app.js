@@ -829,21 +829,8 @@ document.getElementById('font-size-slider').addEventListener('input', (e) => {
     saveFontSize(e.target.value);
 });
 
-// Close modal on outside click
-document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.remove('show');
-        }
-    });
-});
-
-// Close modal on Escape key
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
-    }
-});
+// Modal can only be closed by clicking the close/cancel button
+// (Removed: close on outside click and Escape key)
 
 // JSON Import/Export event listeners
 document.getElementById('export-json-btn').addEventListener('click', exportTabAsJson);
@@ -906,3 +893,164 @@ document.getElementById('description-color-input').addEventListener('change', (e
         document.getElementById('description-color-picker').value = color;
     }
 });
+
+// ===== URL Sidebar =====
+let sidebarCollapsed = localStorage.getItem('commandhub_sidebar_collapsed') === 'true';
+
+// Initialize sidebar
+function initSidebar() {
+    const sidebar = document.getElementById('url-sidebar');
+    const toggle = document.getElementById('sidebar-toggle');
+
+    if (!sidebar || !toggle) return;
+
+    // Apply saved state
+    if (sidebarCollapsed) {
+        sidebar.classList.add('collapsed');
+        document.body.classList.add('sidebar-collapsed');
+    }
+
+    document.body.classList.add('has-sidebar');
+
+    // Toggle handler
+    toggle.addEventListener('click', () => {
+        sidebarCollapsed = !sidebarCollapsed;
+        sidebar.classList.toggle('collapsed', sidebarCollapsed);
+        document.body.classList.toggle('sidebar-collapsed', sidebarCollapsed);
+        localStorage.setItem('commandhub_sidebar_collapsed', sidebarCollapsed);
+
+        // Mobile expanded state
+        if (window.innerWidth <= 600) {
+            sidebar.classList.toggle('expanded', !sidebarCollapsed);
+            document.body.classList.toggle('sidebar-expanded', !sidebarCollapsed);
+        }
+    });
+
+    // Initial load of URLs
+    loadSidebarUrls();
+}
+
+// Get favicon URL for a given URL
+function getFaviconUrl(url) {
+    try {
+        const urlObj = new URL(url);
+        // Use Google's favicon service as primary
+        return `https://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=32`;
+    } catch {
+        return null;
+    }
+}
+
+// Extract domain from URL
+function getDomain(url) {
+    try {
+        const urlObj = new URL(url);
+        return urlObj.hostname.replace('www.', '');
+    } catch {
+        return url;
+    }
+}
+
+// Load all URLs from URL-type tabs for sidebar
+async function loadSidebarUrls() {
+    if (!db) return;
+
+    const container = document.getElementById('sidebar-urls');
+    if (!container) return;
+
+    // Get all URL-type tabs
+    const urlTabs = tabs.filter(t => t.type === 'url');
+
+    if (urlTabs.length === 0) {
+        container.innerHTML = '<div class="sidebar-empty">暂无 URL 链接<br><span style="font-size: 11px; margin-top: 4px; display: block;">创建 URL 类型的 Tab 来添加链接</span></div>';
+        return;
+    }
+
+    let html = '';
+
+    for (const tab of urlTabs) {
+        // Get items for this tab
+        const result = db.exec('SELECT * FROM items WHERE tab_id = ? ORDER BY copy_count DESC, sort_order ASC', [tab.id]);
+        const tabItems = result.length > 0 ? result[0].values.map(row => ({
+            id: row[0],
+            tab_id: row[1],
+            title: row[2],
+            content: row[3],
+            description: row[4],
+            copy_count: row[5],
+            sort_order: row[6]
+        })) : [];
+
+        if (tabItems.length === 0) continue;
+
+        html += `<div class="url-group">`;
+        html += `<div class="url-group-title">${escapeHtml(tab.name)}</div>`;
+
+        for (const item of tabItems) {
+            // Each item can have multiple URLs (newline separated)
+            const urls = item.content.split('\n').filter(u => u.trim());
+
+            for (const url of urls) {
+                const domain = getDomain(url);
+                const faviconUrl = getFaviconUrl(url);
+                const displayTitle = item.description || item.title || domain;
+
+                html += `
+                    <a class="url-item" href="${escapeHtml(url)}" target="_blank"
+                       onclick="handleSidebarUrlClick(event, ${item.id}, '${escapeHtml(url).replace(/'/g, "\\'")}')">
+                        <div class="url-favicon loading" data-url="${escapeHtml(url)}">
+                            ${faviconUrl ? `<img src="${faviconUrl}" alt="" onerror="this.parentElement.innerHTML='🔗'" onload="this.parentElement.classList.remove('loading')">` : '🔗'}
+                        </div>
+                        <div class="url-info">
+                            <div class="url-title">${escapeHtml(displayTitle)}</div>
+                            <div class="url-domain">${escapeHtml(domain)}</div>
+                        </div>
+                        ${item.copy_count > 0 ? `<span class="url-count">${item.copy_count}</span>` : ''}
+                    </a>
+                `;
+            }
+        }
+
+        html += `</div>`;
+    }
+
+    if (!html) {
+        container.innerHTML = '<div class="sidebar-empty">暂无 URL 链接</div>';
+        return;
+    }
+
+    container.innerHTML = html;
+}
+
+// Handle sidebar URL click
+async function handleSidebarUrlClick(event, itemId, url) {
+    event.preventDefault();
+    window.open(url, '_blank');
+    incrementCopyCount(itemId);
+    showToast('已在新标签页打开');
+
+    // Refresh both main content and sidebar
+    await loadItems();
+    await loadSidebarUrls();
+}
+
+// Call initSidebar after database is ready
+const originalInitDatabase = initDatabase;
+initDatabase = async function() {
+    await originalInitDatabase.call(this);
+    initSidebar();
+};
+
+// Also refresh sidebar when tabs or items change
+const originalLoadTabs = loadTabs;
+loadTabs = async function() {
+    await originalLoadTabs.call(this);
+    loadSidebarUrls();
+};
+
+const originalLoadItems = loadItems;
+loadItems = async function() {
+    await originalLoadItems.call(this);
+    // Only refresh sidebar if we're on a URL tab or after item changes
+    loadSidebarUrls();
+};

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="app-layout">
     <div class="container">
         <header>
             <h1>Command Hub</h1>
@@ -45,6 +46,16 @@
         </div>
 
         <main class="items-list" id="items-list"></main>
+    </div>
+
+    <!-- URL Sidebar -->
+    <aside class="url-sidebar" id="url-sidebar">
+        <div class="sidebar-header">
+            <h3>快捷链接</h3>
+            <button class="btn-icon sidebar-toggle" id="sidebar-toggle" title="收起">◀</button>
+        </div>
+        <div class="sidebar-content" id="sidebar-urls"></div>
+    </aside>
     </div>
 
     <!-- Tab Modal -->
