@@ -593,14 +593,23 @@ function createItem(tabId, title, content, description, customOrder = null) {
     saveToIndexedDB();
 }
 
-function updateItem(id, title, content, description, order = null) {
+function updateItem(id, title, content, description, order = null, copyCount = null) {
+    let sql = 'UPDATE items SET title = ?, content = ?, description = ?';
+    const params = [title, content, description];
+
     if (order !== null) {
-        db.run('UPDATE items SET title = ?, content = ?, description = ?, sort_order = ? WHERE id = ?',
-            [title, content, description, order, id]);
-    } else {
-        db.run('UPDATE items SET title = ?, content = ?, description = ? WHERE id = ?',
-            [title, content, description, id]);
+        sql += ', sort_order = ?';
+        params.push(order);
     }
+    if (copyCount !== null) {
+        sql += ', copy_count = ?';
+        params.push(copyCount);
+    }
+
+    sql += ' WHERE id = ?';
+    params.push(id);
+
+    db.run(sql, params);
     saveToIndexedDB();
 }
 
@@ -815,6 +824,16 @@ function openItemModal(item = null) {
     document.getElementById('item-content').value = item?.content || '';
     document.getElementById('item-description').value = item?.description || '';
     document.getElementById('item-order').value = item?.sort_order || '';
+    // 编辑时显示复制次数字段
+    const copyCountGroup = document.getElementById('copy-count-group');
+    const copyCountInput = document.getElementById('item-copy-count');
+    if (item) {
+        copyCountGroup.style.display = 'block';
+        copyCountInput.value = item.copy_count || 0;
+    } else {
+        copyCountGroup.style.display = 'none';
+        copyCountInput.value = 0;
+    }
     document.getElementById('item-modal').classList.add('show');
     document.getElementById('item-title').focus();
 }
@@ -836,11 +855,13 @@ document.getElementById('item-form').addEventListener('submit', async (e) => {
     const description = document.getElementById('item-description').value.trim();
     const orderValue = document.getElementById('item-order').value;
     const order = orderValue ? parseInt(orderValue) : null;
+    const copyCountValue = document.getElementById('item-copy-count').value;
+    const copyCount = copyCountValue ? parseInt(copyCountValue) : null;
 
     if (!title || !content) return;
 
     if (id) {
-        updateItem(parseInt(id), title, content, description, order);
+        updateItem(parseInt(id), title, content, description, order, copyCount);
     } else {
         // 在 All 标签页不能新建项目
         if (currentTabId === ALL_TAB_ID) {
