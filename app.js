@@ -7,8 +7,10 @@ let currentSort = localStorage.getItem('commandhub_sort') || 'order_asc';
 let currentTheme = localStorage.getItem('commandhub_theme') || 'dark-blue';
 let commandColor = localStorage.getItem('commandhub_command_color') || '#d1fae5';
 let descriptionColor = localStorage.getItem('commandhub_description_color') || '#6b7280';
+let showAllTab = localStorage.getItem('commandhub_show_all_tab') !== 'false'; // 默认显示
 
 const DB_NAME = 'command-hub-db';
+const ALL_TAB_ID = 'all'; // 特殊的 All 标签 ID
 
 // Font size control
 function initFontSize() {
@@ -142,11 +144,24 @@ function resetDescriptionColor() {
 // Settings Modal
 function openSettingsModal() {
     updateColorInputs();
+    // 更新 All 标签复选框状态
+    document.getElementById('show-all-tab').checked = showAllTab;
     document.getElementById('settings-modal').classList.add('show');
 }
 
 function closeSettingsModal() {
     document.getElementById('settings-modal').classList.remove('show');
+}
+
+// All Tab 设置
+function setShowAllTab(show) {
+    showAllTab = show;
+    localStorage.setItem('commandhub_show_all_tab', show ? 'true' : 'false');
+    renderTabs();
+    // 如果当前在 All 标签但隐藏了它，切换到第一个标签
+    if (!show && currentTabId === ALL_TAB_ID && tabs.length > 0) {
+        selectTab(tabs[0].id);
+    }
 }
 
 // IndexedDB helpers
@@ -418,17 +433,104 @@ function moveTab(id, direction) {
 
 function renderTabs() {
     const nav = document.getElementById('tabs-nav');
-    nav.innerHTML = tabs.map(tab => `
+
+    // 如果设置显示 All 标签，在最左边添加
+    const allTabHtml = showAllTab ? `
+        <div class="tab tab-all ${currentTabId === ALL_TAB_ID ? 'active' : ''}" data-id="${ALL_TAB_ID}" onclick="selectAllTab()">
+            <span class="tab-name">All</span>
+        </div>
+    ` : '';
+
+    const tabsHtml = tabs.map(tab => `
         <div class="tab ${tab.id === currentTabId ? 'active' : ''}" data-id="${tab.id}" onclick="selectTab(${tab.id})">
             <span class="tab-name">${escapeHtml(tab.name)}</span>
         </div>
     `).join('');
+
+    nav.innerHTML = allTabHtml + tabsHtml;
 }
 
 async function selectTab(tabId) {
     currentTabId = tabId;
     renderTabs();
     await loadItems();
+}
+
+async function selectAllTab() {
+    currentTabId = ALL_TAB_ID;
+    renderTabs();
+    await loadAllItems();
+}
+
+async function loadAllItems() {
+    // 加载所有项目，按 copy_count 降序排列
+    const result = db.exec('SELECT * FROM items ORDER BY copy_count DESC, sort_order ASC');
+
+    items = result.length > 0 ? result[0].values.map(row => ({
+        id: row[0],
+        tab_id: row[1],
+        title: row[2],
+        content: row[3],
+        description: row[4],
+        copy_count: row[5],
+        sort_order: row[6]
+    })) : [];
+
+    renderAllItems();
+}
+
+function renderAllItems() {
+    const list = document.getElementById('items-list');
+
+    if (items.length === 0) {
+        list.innerHTML = '<p class="empty-state">暂无内容</p>';
+        return;
+    }
+
+    list.innerHTML = items.map(item => {
+        const tab = tabs.find(t => t.id === item.tab_id);
+        const isCommand = tab?.type === 'command';
+        const isUrl = tab?.type === 'url';
+
+        // Split content by newlines to support multiple commands/urls
+        const lines = item.content.split('\n').filter(line => line.trim());
+
+        let contentHtml;
+        if (isCommand) {
+            contentHtml = lines.map((cmd, idx) => `
+                <div class="command-line">
+                    <code>${escapeHtml(cmd)}</code>
+                    <button class="btn btn-primary btn-small" onclick="handleCopyCommand(${item.id}, ${idx}, '${escapeHtml(cmd).replace(/'/g, "\\'")}')">复制</button>
+                </div>
+            `).join('');
+        } else if (isUrl) {
+            contentHtml = lines.map((url, idx) => `
+                <div class="command-line">
+                    <code>${escapeHtml(url)}</code>
+                    <button class="btn btn-primary btn-small" onclick="handleOpenUrl(${item.id}, '${escapeHtml(url).replace(/'/g, "\\'")}')">打开</button>
+                </div>
+            `).join('');
+        } else {
+            contentHtml = `<div class="item-content">${escapeHtml(item.content)}</div>`;
+        }
+
+        // 显示所属标签和复制次数
+        const tabBadge = tab ? `<span class="tab-badge">${escapeHtml(tab.name)}</span>` : '';
+        const countBadge = `<span class="count-badge">${item.copy_count}</span>`;
+
+        return `
+            <div class="item-card item-card-all" data-id="${item.id}">
+                <div class="item-header">
+                    <div class="item-title-row">
+                        ${tabBadge}
+                        <span class="item-title">${escapeHtml(item.description || item.title)}</span>
+                        ${countBadge}
+                    </div>
+                </div>
+                ${contentHtml}
+            </div>
+        `;
+    }).join('');
 }
 
 async function handleMoveTab(tabId, direction) {
@@ -842,6 +944,10 @@ document.getElementById('edit-tab-btn').addEventListener('click', () => {
         showToast('请先选择一个 Tab');
         return;
     }
+    if (currentTabId === ALL_TAB_ID) {
+        showToast('All 标签为系统固定标签，无法编辑');
+        return;
+    }
     const tab = tabs.find(t => t.id === currentTabId);
     if (tab) openTabModal(tab);
 });
@@ -851,12 +957,20 @@ document.getElementById('add-item-btn').addEventListener('click', () => {
         showToast('请先选择一个 Tab');
         return;
     }
+    if (currentTabId === ALL_TAB_ID) {
+        showToast('请先选择具体的 Tab 再添加项目');
+        return;
+    }
     openItemModal();
 });
 
 document.getElementById('sort-select').addEventListener('change', (e) => {
     saveSort(e.target.value);
-    loadItems();
+    if (currentTabId === ALL_TAB_ID) {
+        loadAllItems();
+    } else {
+        loadItems();
+    }
 });
 
 // Font size control
@@ -895,6 +1009,11 @@ document.getElementById('confirm-paste-import').addEventListener('click', async 
 
 // Settings event listeners
 document.getElementById('settings-btn').addEventListener('click', openSettingsModal);
+
+// All Tab checkbox
+document.getElementById('show-all-tab').addEventListener('change', (e) => {
+    setShowAllTab(e.target.checked);
+});
 
 // Theme selection
 document.querySelectorAll('.theme-option').forEach(opt => {

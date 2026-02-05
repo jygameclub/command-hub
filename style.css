@@ -413,6 +413,23 @@ header h1 {
     font-weight: 600;
 }
 
+/* All Tab 特殊样式 */
+.tab.tab-all {
+    background: linear-gradient(135deg, #475569, #64748b);
+    color: #f1f5f9;
+    border-color: #64748b;
+}
+
+.tab.tab-all:hover {
+    border-color: #94a3b8;
+}
+
+.tab.tab-all.active {
+    background: linear-gradient(135deg, #64748b, #94a3b8);
+    color: #020617;
+    font-weight: 600;
+}
+
 .tab-name {
     cursor: pointer;
 }
@@ -482,11 +499,42 @@ header h1 {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* All Tab 视图中的项目卡片 */
+.item-card-all .item-actions {
+    display: none;
+}
+
 .item-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 12px;
+}
+
+.item-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tab-badge {
+    font-size: 0.75em;
+    padding: 3px 8px;
+    background: linear-gradient(135deg, #475569, #64748b);
+    color: #f1f5f9;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.count-badge {
+    font-size: 0.75em;
+    padding: 3px 8px;
+    background: var(--accent);
+    color: #020617;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-left: auto;
 }
 
 .item-title {
@@ -868,6 +916,38 @@ header h1 {
 .btn-reset:hover {
     border-color: var(--accent);
     color: var(--accent);
+}
+
+/* Display Settings */
+.display-settings {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.display-settings h3 {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.setting-row label {
+    font-size: 0.9em;
+    color: var(--text-primary);
+}
+
+.setting-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--accent);
 }
 
 /* Data Settings */
