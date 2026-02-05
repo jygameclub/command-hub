@@ -996,6 +996,68 @@ header h1 {
     margin: 0;
 }
 
+/* Tab Archive Settings */
+.tab-archive-settings {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.tab-archive-settings h3 {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.archive-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.tab-archive-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.tab-archive-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.tab-archive-item.archived {
+    opacity: 0.6;
+}
+
+.tab-archive-item .tab-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tab-archive-item .tab-type {
+    font-size: 11px;
+    padding: 2px 6px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    color: var(--text-muted);
+}
+
+.tab-archive-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--accent);
+}
+
 /* App Layout with Sidebar */
 .app-layout {
     display: flex;

@@ -146,11 +146,47 @@ function openSettingsModal() {
     updateColorInputs();
     // 更新 All 标签复选框状态
     document.getElementById('show-all-tab').checked = showAllTab;
+    // 渲染 Tab 归档列表
+    renderTabArchiveList();
     document.getElementById('settings-modal').classList.add('show');
 }
 
 function closeSettingsModal() {
     document.getElementById('settings-modal').classList.remove('show');
+}
+
+// Tab 归档管理
+function renderTabArchiveList() {
+    const list = document.getElementById('tab-archive-list');
+    if (!list) return;
+
+    if (tabs.length === 0) {
+        list.innerHTML = '<p class="archive-hint">暂无 Tab</p>';
+        return;
+    }
+
+    const typeLabels = { command: '命令', note: '笔记', url: 'URL' };
+
+    list.innerHTML = tabs.map(tab => `
+        <div class="tab-archive-item ${tab.archived ? 'archived' : ''}">
+            <div class="tab-info">
+                <span>${escapeHtml(tab.name)}</span>
+                <span class="tab-type">${typeLabels[tab.type] || tab.type}</span>
+            </div>
+            <input type="checkbox"
+                   ${tab.archived ? 'checked' : ''}
+                   onchange="toggleTabArchive(${tab.id}, this.checked)"
+                   title="${tab.archived ? '取消归档' : '归档'}">
+        </div>
+    `).join('');
+}
+
+async function toggleTabArchive(tabId, archived) {
+    db.run('UPDATE tabs SET archived = ? WHERE id = ?', [archived ? 1 : 0, tabId]);
+    await saveToIndexedDB();
+    await loadTabs();
+    renderTabArchiveList();
+    showToast(archived ? '已归档' : '已取消归档');
 }
 
 // All Tab 设置
@@ -389,15 +425,26 @@ async function loadTabs() {
         id: row[0],
         name: row[1],
         type: row[2],
-        sort_order: row[3]
+        sort_order: row[3],
+        archived: row[4] || 0
     })) : [];
 
     renderTabs();
 
-    if (tabs.length > 0 && !currentTabId) {
-        selectTab(tabs[0].id);
-    } else if (currentTabId) {
-        await loadItems();
+    // 选择第一个未归档的 Tab
+    const visibleTabs = tabs.filter(t => !t.archived);
+    if (visibleTabs.length > 0 && !currentTabId) {
+        selectTab(visibleTabs[0].id);
+    } else if (currentTabId && currentTabId !== ALL_TAB_ID) {
+        // 如果当前选中的 Tab 被归档了，切换到第一个可见的 Tab
+        const currentTab = tabs.find(t => t.id === currentTabId);
+        if (currentTab?.archived && visibleTabs.length > 0) {
+            selectTab(visibleTabs[0].id);
+        } else {
+            await loadItems();
+        }
+    } else if (currentTabId === ALL_TAB_ID) {
+        await loadAllItems();
     }
 }
 
@@ -443,7 +490,9 @@ function renderTabs() {
         </div>
     ` : '';
 
-    const tabsHtml = tabs.map(tab => `
+    // 只显示未归档的 Tab
+    const visibleTabs = tabs.filter(t => !t.archived);
+    const tabsHtml = visibleTabs.map(tab => `
         <div class="tab ${tab.id === currentTabId ? 'active' : ''}" data-id="${tab.id}" onclick="selectTab(${tab.id})">
             <span class="tab-name">${escapeHtml(tab.name)}</span>
         </div>
@@ -899,24 +948,34 @@ async function initDatabase() {
     await loadTabs();
 }
 
-// Migrate database to support new tab types
+// Migrate database to support new tab types and archived field
 function migrateDatabase() {
     try {
         // Check current table schema
         const schemaResult = db.exec("SELECT sql FROM sqlite_master WHERE type='table' AND name='tabs'");
         const currentSchema = schemaResult.length > 0 ? schemaResult[0].values[0][0] : '';
 
-        // Skip migration if already supports 'url' type
-        if (currentSchema.includes("'url'")) {
+        // Check if migration is needed
+        const needsUrlMigration = !currentSchema.includes("'url'");
+        const needsArchivedMigration = !currentSchema.includes('archived');
+
+        if (!needsUrlMigration && !needsArchivedMigration) {
             console.log('Database already migrated, skipping...');
             return;
         }
 
-        console.log('Migrating database to support url type...');
+        console.log('Migrating database...');
 
-        // Get existing tabs data
-        const tabsResult = db.exec('SELECT id, name, type, sort_order FROM tabs');
-        const tabsData = tabsResult.length > 0 ? tabsResult[0].values : [];
+        // Get existing tabs data - check if archived column exists
+        let tabsData = [];
+        try {
+            const tabsResult = db.exec('SELECT id, name, type, sort_order, archived FROM tabs');
+            tabsData = tabsResult.length > 0 ? tabsResult[0].values : [];
+        } catch {
+            // archived column doesn't exist, get without it
+            const tabsResult = db.exec('SELECT id, name, type, sort_order FROM tabs');
+            tabsData = tabsResult.length > 0 ? tabsResult[0].values.map(row => [...row, 0]) : [];
+        }
 
         // Get existing items data
         const itemsResult = db.exec('SELECT id, tab_id, title, content, description, copy_count, sort_order FROM items');
@@ -928,12 +987,12 @@ function migrateDatabase() {
         db.run('DROP TABLE IF EXISTS items');
         db.run('DROP TABLE IF EXISTS tabs');
 
-        // Create new tables with updated CHECK constraint
+        // Create new tables with updated schema
         createTables();
 
-        // Restore tabs data
+        // Restore tabs data with archived field
         for (const row of tabsData) {
-            db.run('INSERT INTO tabs (id, name, type, sort_order) VALUES (?, ?, ?, ?)', row);
+            db.run('INSERT INTO tabs (id, name, type, sort_order, archived) VALUES (?, ?, ?, ?, ?)', row);
         }
 
         // Restore items data
@@ -954,7 +1013,8 @@ function createTables() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             type TEXT NOT NULL CHECK(type IN ('command', 'note', 'url')),
-            sort_order INTEGER NOT NULL DEFAULT 0
+            sort_order INTEGER NOT NULL DEFAULT 0,
+            archived INTEGER NOT NULL DEFAULT 0
         )
     `);
     db.run(`
