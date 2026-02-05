@@ -1187,6 +1187,7 @@ let sidebarCollapsed = localStorage.getItem('commandhub_sidebar_collapsed') === 
 function initSidebar() {
     const sidebar = document.getElementById('url-sidebar');
     const toggle = document.getElementById('sidebar-toggle');
+    const resizer = document.getElementById('sidebar-resizer');
 
     if (!sidebar || !toggle) return;
 
@@ -1194,6 +1195,14 @@ function initSidebar() {
     if (sidebarCollapsed) {
         sidebar.classList.add('collapsed');
         document.body.classList.add('sidebar-collapsed');
+        if (resizer) resizer.classList.add('hidden');
+    }
+
+    // Apply saved width
+    const savedWidth = localStorage.getItem('commandhub_sidebar_width');
+    if (savedWidth) {
+        sidebar.style.width = savedWidth + 'px';
+        if (resizer) resizer.style.right = savedWidth + 'px';
     }
 
     document.body.classList.add('has-sidebar');
@@ -1205,6 +1214,9 @@ function initSidebar() {
         document.body.classList.toggle('sidebar-collapsed', sidebarCollapsed);
         localStorage.setItem('commandhub_sidebar_collapsed', sidebarCollapsed);
 
+        // Hide/show resizer
+        if (resizer) resizer.classList.toggle('hidden', sidebarCollapsed);
+
         // Mobile expanded state
         if (window.innerWidth <= 600) {
             sidebar.classList.toggle('expanded', !sidebarCollapsed);
@@ -1212,8 +1224,53 @@ function initSidebar() {
         }
     });
 
+    // Resizer drag handler
+    if (resizer) {
+        initSidebarResizer(resizer, sidebar);
+    }
+
     // Initial load of URLs
     loadSidebarUrls();
+}
+
+// Sidebar resizer drag functionality
+function initSidebarResizer(resizer, sidebar) {
+    let isResizing = false;
+    let startX, startWidth;
+
+    resizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = sidebar.offsetWidth;
+        resizer.classList.add('resizing');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+
+        const diff = startX - e.clientX;
+        let newWidth = startWidth + diff;
+
+        // Limit width between 120px and 500px
+        newWidth = Math.max(120, Math.min(500, newWidth));
+
+        sidebar.style.width = newWidth + 'px';
+        resizer.style.right = newWidth + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (!isResizing) return;
+        isResizing = false;
+        resizer.classList.remove('resizing');
+        document.body.style.cursor = '';
+        document.body.style.userSelect = '';
+
+        // Save width
+        localStorage.setItem('commandhub_sidebar_width', sidebar.offsetWidth);
+    });
 }
 
 // Get favicon URL for a given URL

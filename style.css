@@ -648,12 +648,37 @@ header h1 {
     max-height: 90vh;
     overflow-y: auto;
     border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--bg-tertiary);
+    color: var(--text-muted);
+    font-size: 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
 }
 
 .modal-content h2 {
     margin-bottom: 20px;
     font-size: 1.2em;
     color: var(--accent);
+    padding-right: 40px;
 }
 
 .form-group {
@@ -1087,10 +1112,33 @@ header h1 {
     padding: 20px;
 }
 
+/* Sidebar Resizer */
+.sidebar-resizer {
+    width: 6px;
+    background: transparent;
+    cursor: col-resize;
+    position: fixed;
+    right: 280px;
+    top: 0;
+    height: 100vh;
+    z-index: 101;
+    transition: right 0.1s ease, background 0.2s;
+}
+
+.sidebar-resizer:hover,
+.sidebar-resizer.resizing {
+    background: var(--accent);
+}
+
+.sidebar-resizer.hidden {
+    display: none;
+}
+
 /* URL Sidebar */
 .url-sidebar {
     width: 280px;
-    min-width: 280px;
+    min-width: 120px;
+    max-width: 500px;
     background: var(--bg-secondary);
     border-left: 1px solid var(--border-color);
     display: flex;
@@ -1099,7 +1147,7 @@ header h1 {
     right: 0;
     top: 0;
     height: 100vh;
-    transition: transform 0.3s ease, width 0.3s ease;
+    transition: transform 0.3s ease;
     z-index: 100;
 }
 

@@ -50,6 +50,7 @@
     </div>
 
     <!-- URL Sidebar -->
+    <div class="sidebar-resizer" id="sidebar-resizer"></div>
     <aside class="url-sidebar" id="url-sidebar">
         <div class="sidebar-header">
             <h3>快捷链接</h3>
@@ -62,6 +63,7 @@
     <!-- Tab Modal -->
     <div id="tab-modal" class="modal">
         <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeTabModal()" title="关闭">&times;</button>
             <h2 id="tab-modal-title">新建 Tab</h2>
             <form id="tab-form">
                 <input type="hidden" id="tab-id">
@@ -99,6 +101,7 @@
     <!-- Item Modal -->
     <div id="item-modal" class="modal">
         <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeItemModal()" title="关闭">&times;</button>
             <h2 id="item-modal-title">添加项目</h2>
             <form id="item-form">
                 <input type="hidden" id="item-id">
@@ -133,6 +136,7 @@
     <!-- JSON Import Modal -->
     <div id="json-import-modal" class="modal">
         <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeJsonImportModal()" title="关闭">&times;</button>
             <h2>导入 JSON</h2>
             <div class="import-options">
                 <button id="import-json-file-btn" class="btn import-option-btn">
@@ -160,6 +164,7 @@
     <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeSettingsModal()" title="关闭">&times;</button>
             <h2>主题设置</h2>
             <div class="form-group">
                 <label>深色主题</label>
