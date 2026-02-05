@@ -215,7 +215,8 @@ function exportDatabase() {
     a.href = url;
     a.download = `command-hub-${new Date().toISOString().slice(0, 10)}.db`;
     a.click();
-    URL.revokeObjectURL(url);
+    // 延迟释放 Blob URL 以确保下载完成
+    setTimeout(() => URL.revokeObjectURL(url), 100);
     showToast('数据库已导出');
 }
 
@@ -277,8 +278,8 @@ async function loadDefaultDatabase() {
 
 // Export current tab as JSON
 function exportTabAsJson() {
-    if (!currentTabId) {
-        showToast('请先选择一个 Tab');
+    if (!currentTabId || currentTabId === ALL_TAB_ID) {
+        showToast('请先选择具体的 Tab 再导出');
         return;
     }
 
@@ -303,14 +304,15 @@ function exportTabAsJson() {
     a.href = url;
     a.download = `${currentTab.name}-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
-    URL.revokeObjectURL(url);
+    // 延迟释放 Blob URL 以确保下载完成
+    setTimeout(() => URL.revokeObjectURL(url), 100);
     showToast('JSON 已导出');
 }
 
 // Import JSON to current tab (accepts File object or JSON string)
 async function importTabFromJson(input) {
-    if (!currentTabId) {
-        showToast('请先选择一个 Tab');
+    if (!currentTabId || currentTabId === ALL_TAB_ID) {
+        showToast('请先选择具体的 Tab 再导入');
         return;
     }
 
@@ -463,8 +465,15 @@ async function selectAllTab() {
 }
 
 async function loadAllItems() {
-    // 加载所有项目，按 copy_count 降序排列
-    const result = db.exec('SELECT * FROM items ORDER BY copy_count DESC, sort_order ASC');
+    // 支持排序选择，默认按复制次数降序
+    const sortMap = {
+        'order_asc': 'sort_order ASC',
+        'order_desc': 'sort_order DESC',
+        'count_asc': 'copy_count ASC',
+        'count_desc': 'copy_count DESC'
+    };
+    const orderBy = sortMap[currentSort] || 'copy_count DESC';
+    const result = db.exec(`SELECT * FROM items ORDER BY ${orderBy}`);
 
     items = result.length > 0 ? result[0].values.map(row => ({
         id: row[0],
@@ -675,13 +684,17 @@ function renderItems() {
 }
 
 async function handleCopyCommand(itemId, cmdIndex, cmdText) {
-    await navigator.clipboard.writeText(cmdText);
-    incrementCopyCount(itemId);
-    showToast('已复制到剪贴板');
-    if (currentTabId === ALL_TAB_ID) {
-        await loadAllItems();
-    } else {
-        await loadItems();
+    try {
+        await navigator.clipboard.writeText(cmdText);
+        incrementCopyCount(itemId);
+        showToast('已复制到剪贴板');
+        if (currentTabId === ALL_TAB_ID) {
+            await loadAllItems();
+        } else {
+            await loadItems();
+        }
+    } catch (e) {
+        showToast('复制失败: ' + e.message);
     }
 }
 
@@ -698,13 +711,21 @@ async function handleOpenUrl(itemId, url) {
 
 async function handleMoveItem(itemId, direction) {
     moveItem(itemId, direction);
-    await loadItems();
+    if (currentTabId === ALL_TAB_ID) {
+        await loadAllItems();
+    } else {
+        await loadItems();
+    }
 }
 
 async function handleDeleteItem(itemId) {
     if (!confirm('确定删除此项目？')) return;
     deleteItem(itemId);
-    await loadItems();
+    if (currentTabId === ALL_TAB_ID) {
+        await loadAllItems();
+    } else {
+        await loadItems();
+    }
 }
 
 // Utility functions
@@ -738,25 +759,25 @@ function openTabModal(tab = null) {
     document.getElementById('tab-name').focus();
 }
 
-function handleClearCurrentTab() {
+async function handleClearCurrentTab() {
     const tabId = parseInt(document.getElementById('tab-id').value);
     if (!tabId) return;
     if (!confirm('确定清空此 Tab 的所有内容？此操作不可恢复！')) return;
     db.run('DELETE FROM items WHERE tab_id = ?', [tabId]);
-    saveToIndexedDB();
+    await saveToIndexedDB();
     closeTabModal();
-    loadItems();
+    await loadItems();
     showToast('已清空当前 Tab');
 }
 
-function handleDeleteCurrentTab() {
+async function handleDeleteCurrentTab() {
     const tabId = parseInt(document.getElementById('tab-id').value);
     if (!tabId) return;
     if (!confirm('确定删除此 Tab 及其所有内容？')) return;
     deleteTab(tabId);
     if (currentTabId === tabId) currentTabId = null;
     closeTabModal();
-    loadTabs();
+    await loadTabs();
 }
 
 function closeTabModal() {
@@ -821,11 +842,20 @@ document.getElementById('item-form').addEventListener('submit', async (e) => {
     if (id) {
         updateItem(parseInt(id), title, content, description, order);
     } else {
+        // 在 All 标签页不能新建项目
+        if (currentTabId === ALL_TAB_ID) {
+            showToast('请先选择具体的 Tab 再添加项目');
+            return;
+        }
         createItem(currentTabId, title, content, description, order);
     }
 
     closeItemModal();
-    await loadItems();
+    if (currentTabId === ALL_TAB_ID) {
+        await loadAllItems();
+    } else {
+        await loadItems();
+    }
 });
 
 // Initialize sql.js and database
@@ -1195,7 +1225,11 @@ async function handleSidebarUrlClick(event, itemId, url) {
     showToast('已在新标签页打开');
 
     // Refresh both main content and sidebar
-    await loadItems();
+    if (currentTabId === ALL_TAB_ID) {
+        await loadAllItems();
+    } else {
+        await loadItems();
+    }
     await loadSidebarUrls();
 }
 
